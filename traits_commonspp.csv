@@ -1,91 +1,91 @@
-species,veg_cover_prop_cov,seedbank_prop_ind,subbed_traits,ref_smass,c3_c4,habit,lifehistory,origin,height_per_day,RMR,RDMC,SRL,Rdiam,LDMC,SLA,seed_mass,height_per_day_seedling,RMR_seedling,RDMC_seedling,SRL_seedling,Rdiam_seedling,LDMC_seedling,SLA_seedling
-acevul,0.0069492,0.025663528,,kew-19 refs (seed only),unknown,forb,perennial,exotic,NA,NA,NA,NA,NA,NA,NA,0.458094737,NA,NA,NA,NA,NA,NA,NA
-achlan,0.005073707,0.003341107,,,unknown,forb,perennial,native,0.138157895,0.348390685,14.41655716,100.9799444,0.738525,12.07321081,303.8002822,0.0647,0.012857143,0.367922827,11.62095229,201.5732105,0.53926,11.64923007,408.6099785
-adelew,0.002264762,0.003341107,,,unknown,forb,perennial,native,0.065909091,0.421026143,10.14724876,112.9849392,0.57245,16.09101326,278.9470556,2.2698,0.010638298,0.459784081,11.36318463,76.47613638,0.67242,16.25174518,290.919302
-alyssum_spp,0.020035673,0.019481833,a. parviflorum and a. minus; data from a. parviflorum,,unknown,forb,ann_bi,exotic,0.104938272,0.194276443,11.89584473,438.8775156,0.54936,16.32906261,237.4252726,1.2476,0.027142857,0.242602547,8.964994426,312.3717726,0.51692,13.16386673,322.8654662
-ambpsi,0.018086016,0.007087558,,kew-2 refs,unknown,forb,perennial,native,0.332061955,0.373290055,11.0160384,84.32146482,0.443566667,22.89200759,182.2178485,6.6043,,,,,,,
-andger,0.071469255,0.002362519,,,c4,graminoid,perennial,native,0.105475202,0.466048445,12.13161831,102.6578469,0.704266667,21.17799711,354.0296187,2.038,0.044642858,0.265784435,10.86914079,75.9380663,0.64445,15.32351757,425.1627173
-aripur,0.014815151,0.002362519,,,c4,graminoid,perennial,native,0.076492357,0.333111469,9.940021495,122.8516734,0.7061,23.66828841,356.3325924,1.2271,0.033333333,0.295263116,13.78471525,56.65594117,0.731666667,18.23938229,300.1156069
-artfri,0.006360228,0.014563547,,,unknown,subshrub,perennial,native,0.1,0.230891,8.973969399,245.6277665,0.52165,15.53313468,399.7068525,0.0664,0.021341464,0.26996619,7.682234519,339.4297416,0.507975,13.48086207,514.2214924
-artlud,0.017188895,0.004092003,,,unknown,forb,perennial,native,0.128654971,0.133867335,7.816444179,219.9931474,0.679725,14.5750151,276.398072,0.09,0.023448276,0.33527854,7.689076197,206.766691,0.58576,12.22973086,436.3959751
-ascste,0.001121647,0,,,unknown,forb,perennial,,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
-astpor,0.025666251,0.023860275,,,unknown,forb,perennial,native,0.077272728,0.382928288,10.78117566,113.7569013,0.602475,15.97222933,210.2652096,0.1636,0.008695652,0.408283033,12.08524495,172.9110412,0.563275,13.12072596,403.9638109
-boucur,0.021018656,0,,,c4,graminoid,perennial,native,0.202052512,0.381885109,12.35968668,116.8980215,0.597475,24.26059034,364.4269651,0.4548,0.023340634,0.257464015,11.24548073,251.0009411,0.44495,17.44925821,517.3232909
-broine,0.023373112,0.008184007,,,c3,graminoid,perennial,exotic,0.131696859,0.447021127,16.40269845,125.2646637,0.6827,15.70669374,463.2000938,2.5067,0.0675,0.478089627,14.23096953,101.4855995,0.57806,21.46505282,291.877494
-brojap,0.027483435,0.042852218,,,c3,graminoid,ann_bi,exotic,0.25374711,0.299229842,15.50335616,248.7523407,0.5409,19.66324304,395.2037908,1.9704,0.093809524,0.364485206,11.55504386,189.4050086,0.54626,18.47332274,340.2015967
-bucdac,0.004889146,0.003341107,,kew-1 ref,c4,graminoid,perennial,native,NA,NA,NA,NA,NA,NA,NA,6.4584,NA,NA,NA,NA,NA,NA,NA
-cactus,0.010627228,0.006682214,,,unknown,shrub,perennial,native,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
-cammic,0.000538822,0.011812596,,kew-8 refs,unknown,forb,ann_bi,exotic,NA,NA,NA,NA,NA,NA,NA,0.303,NA,NA,NA,NA,NA,NA,NA
-carpen,0.022658296,0.004092003,,kew-2 refs,c3,graminoid,perennial,native,0.174774775,0.346055343,15.08772964,153.2038894,0.2786,27.82059409,262.8479583,1.5667,,,,,,,
-carste,0.007524238,0.002362519,,kew-2 refs,c3,graminoid,perennial,native,NA,NA,NA,NA,NA,NA,NA,0.939,NA,NA,NA,NA,NA,NA,NA
-cendif,0.004443239,0,,kew-3 refs,unknown,forb,perennial,exotic,NA,NA,NA,NA,NA,NA,NA,1.891,NA,NA,NA,NA,NA,NA,NA
-chenopodium_spp,0,0.008184007,used seed mass for c. leptophyllum (most common in bosxtg_spplist),kew-3 refs,unknown,forb,ann_bi,native,NA,NA,NA,NA,NA,NA,NA,0.5,NA,NA,NA,NA,NA,NA,NA
-chondrosum_spp,0.036921421,0.005786967,c. gracilis and c. hirsutum; data comes from c. gracilis,,c4,graminoid,perennial,native,0.120633442,0.220949845,13.24333504,223.9514101,0.5731,23.59388363,338.4522139,0.5056,0.026785714,0.356523439,16.93816903,155.0179054,0.45045,16.67756537,422.2916774
-cicint,0.017053236,0.012501277,,,unknown,forb,perennial,exotic,0.092975207,0.639285583,16.38783952,42.25108345,0.871775,14.64891255,215.0989809,1.0314,0.014642857,0.49055489,10.27965423,67.25192941,0.68932,12.20535468,350.3773148
-cirund,0.004344121,0,data comes from c. vulgaris (julies traits),"kew-2 refs (for cirund, not cirvul)",unknown,forb,perennial,native,0.076502732,0.573802412,16.28752094,55.4395487,0.7469,13.13281592,165.9759453,4.9,0.009285714,0.452638278,9.027261087,69.92815969,0.72136,9.778189147,280.5722352
-comumb,0.002264762,0.008518184,,kew-1 ref,unknown,forb,perennial,native,NA,NA,NA,NA,NA,NA,NA,51.7180147,NA,NA,NA,NA,NA,NA,NA
-conarv,0.013538625,0.014941884,,kew-4 refs (dropped 2 extreme),unknown,forb,perennial,exotic,NA,NA,NA,NA,NA,NA,NA,13.9631,NA,NA,NA,NA,NA,NA,NA
-concan,0.00098375,0.008184007,,kew-13 refs,unknown,forb,ann_bi,native,NA,NA,NA,NA,NA,NA,NA,0.7,NA,NA,NA,NA,NA,NA,NA
-dacglo,0.016372856,0,,,c3,graminoid,perennial,exotic,0.19172465,0.332295178,20.23109095,202.084534,0.422325,18.15082899,459.8682903,0.7401,0.059069767,0.313542242,8.737190399,274.9997297,0.482,15.08032066,398.1300112
-dalpur,0.003947276,0.004092003,,kew-6 refs,unknown,forb,perennial,native,NA,NA,NA,NA,NA,NA,NA,1.7219,NA,NA,NA,NA,NA,NA,NA
-daucar,0.006808514,0.011330244,,kew-103 refs,unknown,forb,ann_bi,exotic,NA,NA,NA,NA,NA,NA,NA,1,NA,NA,NA,NA,NA,NA,NA
-descurainia_spp,0,0.007470942,could be several species; used seed mass for d. sophia in Kew,kew-12 refs,unknown,forb,ann_bi,exotic,NA,NA,NA,NA,NA,NA,NA,0.15,NA,NA,NA,NA,NA,NA,NA
-diaarm,0.006555789,0.072625856,,,unknown,forb,ann_bi,exotic,0.057680152,0.205258945,12.50516416,465.0757382,0.45675,14.82750437,238.3739456,0.1858,0.009199507,0.259449426,14.65680837,175.2011475,0.5914,14.04379501,259.0581177
-draba_spp,0.000622178,0.012940051,d. reptans and d. nemorosa; veg traits from d. reptans; seed mass is average of the species mean for drerep in kew (1 ref) and dranem in kew (4 refs),kew-1 ref,unknown,forb,ann_bi,native,0.200789141,0.155132698,8.946148992,1425.315465,0.168033333,9.38729081,293.9823114,0.0385,,,,,,,
-elepal,0.011090659,0,,kew-12 ref,c3,graminoid,perennial,native,NA,NA,NA,NA,NA,NA,NA,0.75,NA,NA,NA,NA,NA,NA,NA
-elyely,0.008112207,0.002362519,,,c3,graminoid,perennial,native,0.228764479,0.483580595,15.55193151,90.46898283,0.62075,26.83896679,200.9919548,1.6787,0.089880952,0.328025766,9.704509099,200.1339527,0.5693,18.91372476,345.5470644
-erigeron_spp,0.010839117,0.024890685,e. flagellaris and e. colomexicanus; data collected from e. divergens (syn. Ericol),kew-1 ref,unknown,forb,ann_bi,native,0.051903529,0.46027616,11.31816851,132.3670767,0.3574,14.49314454,214.089982,0.0356,,,,,,,
-ermfen,0.016095658,0.002362519,,,unknown,forb,perennial,native,0.082738095,0.24988467,16.9124395,136.3777739,0.312925,29.49815889,98.81061214,0.3766,,,,,,,
-erocic,0.000439946,0.020046641,"veg trait data from erodium botrys, seed mass from e. cicutarium",kew-18 refs,unknown,forb,ann_bi,exotic,0.201300095,0.2884,10.248,196.6747254,0.57114,17.52,193.05,2,0.052380952,0.415845711,5.663591882,158.3504634,0.67842,13.93748338,310.5354496
-erysimum_spp,0.002155287,0.013153951,e. capitatum and possibly e. asper; data from e. capitatum,,unknown,forb,ann_bi,native,0.046875,0.287418548,10.47789202,368.1501361,0.43795,19.47868181,151.4287864,0.2679,0.008139535,0.224579197,15.59205205,288.7427124,0.477375,13.85105215,324.1024094
-fesaru,0.013124856,0.002362519,,kew-18 refs,c3,graminoid,perennial,exotic,NA,NA,NA,NA,NA,NA,NA,2.4,NA,NA,NA,NA,NA,NA,NA
-grisqu,0.002918273,0.006682214,,,unknown,forb,perennial,native,0.116693837,0.284076502,8.061694399,95.17591063,0.715925,14.62886195,265.5532688,1.0853,0.015625,0.357202193,8.221552126,195.0457887,0.57435,13.77134991,333.3399281
-gutsar,0.005158826,0,,kew-3 refs,unknown,subshrub,perennial,native,NA,NA,NA,NA,NA,NA,NA,0.21,NA,NA,NA,NA,NA,NA,NA
-hescom,0.025496011,0.003341107,,,c3,graminoid,perennial,native,0.201580488,0.353159516,16.44039128,99.99728917,0.3829,35.08095435,153.2855047,6.3467,,,,,,,
-heterotheca_spp,0.025242332,0.005282754,heterotheca villosa and h. foliosa; data from h. foliosa,,unknown,forb,perennial,native,0.11036036,0.34521516,11.35188998,177.0492411,0.590275,18.86399641,213.4002272,0.7527,0.019069767,0.373788595,11.14261352,135.7996573,0.58982,15.41311214,269.4028413
-holumb,0,0.01357164,,kew-2 refs,unknown,forb,ann_bi,exotic,NA,NA,NA,NA,NA,NA,NA,0.17,NA,NA,NA,NA,NA,NA,NA
-hypper,0.006532868,0.039391068,,kew- 32 refs,unknown,forb,perennial,exotic,0.166372951,0.57861956,14.10300677,111.4602618,0.3457,25.86954218,279.6239864,0.2,,,,,,,
-irimis,0.00354696,0.006250638,,kew-6 refs,unknown,forb,perennial,native,NA,NA,NA,NA,NA,NA,NA,15.9,NA,NA,NA,NA,NA,NA,NA
-juncus_spp,0.013531475,0.049556622,"mostly j. arcticus and j. interior, but several others; data from j. arcticus",,c3,graminoid,perennial,native,0.198627002,0.228141688,9.846695408,146.0869489,0.629925,18.2959286,183.9293394,0.0382,0.04702381,0.384939414,15.82610899,270.174628,0.567133333,15.44954302,357.599686
-koemac,0.017323492,0.007470942,,,c3,graminoid,perennial,native,0.120914981,0.35002313,15.51123027,206.1138883,0.26642,27.70236373,201.1786759,0.1578,,,,,,,
-lacser,0.003797324,0.005786967,,,unknown,forb,ann_bi,exotic,0.36597919,0.282830356,8.131533033,143.1050721,0.61405,13.13637399,310.3889221,0.6318,0.021630434,0.394744835,9.084883134,106.1948744,0.64126,11.42985696,443.7163
-lepcam,0.006577159,0.016196616,,kew-6 refs,unknown,forb,ann_bi,exotic,0.021374046,0.521068492,25.1770795,133.5967449,0.2152,22.07152876,157.5505066,2.313,,,,,,,
-lepden,0,0.010297983,,kew-4 refs,unknown,forb,ann_bi,exotic,NA,NA,NA,NA,NA,NA,NA,0.8,NA,NA,NA,NA,NA,NA,NA
-lesmon,0.002639677,0.006250638,,,unknown,forb,perennial,native,0.044386488,0.191237429,24.58228123,210.9681421,0.2132,23.46704601,112.7527004,0.6989,,,,,,,
-liapun,0.016648345,0,,,unknown,forb,perennial,native,0.077083333,0.63888619,9.107465167,117.0366945,0.606825,20.97008809,110.8859868,4.4017,0.102192983,0.320891317,9.24180687,70.26542621,0.693275,13.32289271,196.9395456
-lincan,0,0.018146855,,kew-2 refs,unknown,forb,ann_bi,native,0.246614584,0.154175083,8.865282655,814.4856408,0.230466667,10.40413475,429.6396925,0.015,,,,,,,
-lingen,0.004540194,0.005786967,,kew - 1 ref,unknown,forb,perennial,exotic,0.198636364,0.467947904,15.37138069,192.0896238,0.28815,19.92365251,162.4226929,0.394,,,,,,,
-lotten,0.011147233,0.008184007,,,unknown,forb,perennial,exotic,0.1375,0.248394552,7.876267331,100.7100834,0.71485,16.80148929,259.1216778,0.8896,0.013571428,0.377583433,8.198224527,67.61904945,0.74814,13.81143419,269.7801563
-muhmon,0.034035461,0.01567118,,kew-2 refs,c4,graminoid,perennial,native,0.108270677,NA,NA,NA,0.3077,31.68044077,221.9630904,0.365,,,,,,,
-muhwri,0.004332967,0.002362519,,granite seed,c4,graminoid,perennial,native,NA,NA,NA,NA,NA,NA,NA,0.283,NA,NA,NA,NA,NA,NA,NA
-olipac,0.008598669,0.008184007,,,unknown,forb,perennial,native,0.075856537,0.264704317,10.60048532,251.655404,0.455133333,16.44514371,150.7952336,0.0417,0.030298595,0.277858635,6.608874478,319.2736155,0.45665,11.83442746,333.5598779
-oxadil,0,0.00783559,,kew-2 refs,unknown,forb,perennial,native,NA,NA,NA,NA,NA,NA,NA,0.19,NA,NA,NA,NA,NA,NA,NA
-panvir,0.018192719,0.011081198,,,c4,graminoid,perennial,native,0.4119186,0.326704786,14.70615148,123.8584566,0.390525,24.34703984,291.8108207,1.0544,0.024568966,0.260093708,16.49654631,135.9922986,0.5464,16.574821,495.7634116
-parjam,0.006420803,0.005786967,,kew-1 ref,unknown,forb,perennial,native,NA,NA,NA,NA,NA,NA,NA,0.7416,NA,NA,NA,NA,NA,NA,NA
-passmi,0.012875475,0.002362519,,,c3,graminoid,perennial,native,0.28987693,0.360918804,12.96752182,139.035513,0.5478,23.06153504,181.4307898,3.1045,0.075714286,0.45386689,14.09108527,91.27784264,0.66494,22.81924877,258.1929152
-plalan,0.018704182,0.013775736,,,unknown,forb,perennial,exotic,0.18697479,0.374789174,13.97647171,76.19592608,0.502025,16.71777904,175.8782017,0.6738,0.050805195,0.397100511,7.320804176,169.2047504,0.57052,11.26638704,250.7934777
-plapat,0.002132718,0.004092003,,kew-2 refs,unknown,forb,ann_bi,native,NA,NA,NA,NA,NA,NA,NA,0.55,NA,NA,NA,NA,NA,NA,NA
-poaaga,0.026042436,0.016537635,,,c3,graminoid,perennial,native,0.175,0.292904988,17.12927917,310.6465291,0.476275,23.19200179,323.4145082,0.1483,0.042380952,0.256025504,11.28574561,433.6537035,0.37666,17.44363601,467.2463165
-poacom,0.044143947,0.104406246,,,c3,graminoid,perennial,exotic,0.095475065,0.265642649,15.16736631,438.5415816,0.5316,17.60082847,438.6319584,0.0849,0.03452381,0.485870673,10.17630189,261.823254,0.479625,17.12537374,363.5703981
-pocbil,0,0.009740916,,Zhang et al. 2004 folia geobotanica,unknown,forb,ann_bi,exotic,NA,NA,NA,NA,NA,NA,NA,0.954,NA,NA,NA,NA,NA,NA,NA
-podlac,0.004020155,0,,kew-4 refs,unknown,forb,perennial,exotic,NA,NA,NA,NA,NA,NA,NA,3.9164,NA,NA,NA,NA,NA,NA,NA
-potrec,0.008699373,0.018900154,,kew-8 refs,unknown,forb,perennial,exotic,NA,NA,NA,NA,NA,NA,NA,0.309,NA,NA,NA,NA,NA,NA,NA
-psoten,0.009471624,0.007470942,,,unknown,forb,perennial,native,0.049557522,0.491253732,8.357074999,121.8714229,0.66942,21.20969657,168.2219474,17.36,0.023571429,0.232827243,8.943260508,21.92554572,1.10254,20.99891775,205.4468715
-pteala,0.010099616,0,,,unknown,forb,perennial,native,0.034608696,0.365299014,12.48003436,246.3997084,0.31138,21.78599554,126.032625,4.3289,,,,,,,
-ratcol,0.004768903,0,,,unknown,forb,perennial,native,0.329166667,0.354988912,9.950068453,90.17387681,0.660475,15.32423567,228.5079587,0.7474,0.008928571,0.438643057,11.71310437,55.25947417,0.70966,15.50991509,268.7008238
-rossay,0.011681379,0,Seed mass from Rosa acicularis subsp. Sayi,kew-1 ref,unknown,subshrub,perennial,native,NA,NA,NA,NA,NA,NA,NA,10.1796,NA,NA,NA,NA,NA,NA,NA
-rumcri,0,0.007470942,,kew-38 refs,unknown,forb,perennial,exotic,NA,NA,NA,NA,NA,NA,NA,1.5,NA,NA,NA,NA,NA,NA,NA
-schsco,0.020491766,0.007470942,,,c4,graminoid,perennial,native,0.132743363,0.35498816,10.20072995,112.5280294,0.563175,26.33381087,298.8227637,1.0603,0.015566038,0.290240646,9.023180078,100.5866824,0.654275,12.00885979,586.7902403
-senspa,0.007269104,0.003341107,,kew-1 ref,unknown,forb,perennial,native,NA,NA,NA,NA,NA,NA,NA,0.5996,NA,NA,NA,NA,NA,NA,NA
-silant,0.002369183,0,,kew- 5 refs,unknown,forb,ann_bi,native,NA,NA,NA,NA,NA,NA,NA,0.1,NA,NA,NA,NA,NA,NA,NA
-solmol,0.008212984,0.002362519,,kew - 1 ref ,unknown,forb,perennial,native,NA,NA,NA,NA,NA,NA,NA,0.175,NA,NA,NA,NA,NA,NA,NA
-sorave,0.018799658,0.006250638,,,c4,graminoid,perennial,native,0.24291074,0.333520261,12.1581049,147.4699526,0.5351,24.1353486,296.1223141,1.5197,0.017,0.340644431,13.50985182,77.66736513,0.659966667,19.02534519,549.5835686
-spoasp,0.018956015,0.008184007,,,c4,graminoid,perennial,native,0.185757215,0.3041033,13.20404826,158.3355985,0.491916667,21.57728372,281.3377391,0.6903,0.074757213,0.325227086,14.03494091,136.924207,0.55048,21.67978015,415.1429458
-spocry,0.005991996,0.023268116,,kew-9 refs,c4,graminoid,perennial,native,NA,NA,NA,NA,NA,NA,NA,0.13,NA,NA,NA,NA,NA,NA,NA
-spohet,0.02072889,0,,,c4,graminoid,perennial,native,0.218253968,0.336969001,14.75252283,222.076645,0.2691,34.2,154.8157628,0.8134,,,,,,,
-talpar,0.001524018,0.020998531,,kew-2 refs,unknown,forb,perennial,native,NA,NA,NA,NA,NA,NA,NA,0.191,NA,NA,NA,NA,NA,NA,NA
-taroff,0.00576984,0.002362519,,kew-11 refs,unknown,forb,perennial,native,NA,NA,NA,NA,NA,NA,NA,0.64,NA,NA,NA,NA,NA,NA,NA
-tradub,0.010963403,0.006682214,,,unknown,forb,perennial,exotic,0.162610859,0.609801993,9.037015858,135.2603243,0.6475,12.69181318,199.9329231,2.7905,0.078214286,0.505166997,11.6270323,68.84966666,0.6626,15.82806979,258.1248726
-traram,0.008776899,0,,kew-2 refs,unknown,forb,perennial,native,NA,NA,NA,NA,NA,NA,NA,10.92,NA,NA,NA,NA,NA,NA,NA
-vertha,0,0.015492075,,,unknown,forb,perennial,exotic,0.126383056,0.303884576,13.2939088,179.3386862,0.4641,22.84041433,175.6764748,0.051,0.016785714,0.274478988,7.882239686,346.9239075,0.48518,8.937268955,644.5862732
-virfal,0.01485755,0,,,unknown,forb,perennial,native,0.181415929,0.488151944,16.46616169,48.97805985,0.5012,19.20750988,201.9598548,0.1539,,,,,,,
+species,veg_cover_prop_cov,seedbank_prop_ind,subbed_traits,ref_smass,c3_c4,habit,lifehistory,origin,height_per_day,RMR,RDMC,SRL,Rdiam,LDMC,SLA
+acevul,0.003,0.01,,kew-19 refs (seed only),unknown,forb,perennial,exotic,NA,NA,NA,NA,NA,NA,NA
+achlan,0.002,0.001,,,unknown,forb,perennial,native,0.138157895,0.348390685,14.41655716,100.9799444,0.738525,12.07321081,303.8002822
+adelew,0.001,0.004,,,unknown,forb,perennial,native,0.065909091,0.421026143,10.14724876,112.9849392,0.57245,16.09101326,278.9470556
+alyssum_spp,0.023,0.025,a. parviflorum and a. minus; data from a. parviflorum,,unknown,forb,ann_bi,exotic,0.104938272,0.194276443,11.89584473,438.8775156,0.54936,16.32906261,237.4252726
+ambpsi,0.021,0.004,,kew-2 refs,unknown,forb,perennial,native,0.332061955,0.373290055,11.0160384,84.32146482,0.443566667,22.89200759,182.2178485
+andger,0.13,0,,,c4,graminoid,perennial,native,0.105475202,0.466048445,12.13161831,102.6578469,0.704266667,21.17799711,354.0296187
+aripur,0.016,0.001,,,c4,graminoid,perennial,native,0.076492357,0.333111469,9.940021495,122.8516734,0.7061,23.66828841,356.3325924
+artfri,0.004,0.014,,,unknown,subshrub,perennial,native,0.1,0.230891,8.973969399,245.6277665,0.52165,15.53313468,399.7068525
+artlud,0.015,0.001,,,unknown,forb,perennial,native,0.128654971,0.133867335,7.816444179,219.9931474,0.679725,14.5750151,276.398072
+ascste,0,0,,,unknown,forb,perennial,,NA,NA,NA,NA,NA,NA,NA
+astpor,0.037,0.037,,,unknown,forb,perennial,native,0.077272728,0.382928288,10.78117566,113.7569013,0.602475,15.97222933,210.2652096
+boucur,0.028,0,,,c4,graminoid,perennial,native,0.202052512,0.381885109,12.35968668,116.8980215,0.597475,24.26059034,364.4269651
+broine,0.016,0.004,,,c3,graminoid,perennial,exotic,0.131696859,0.447021127,16.40269845,125.2646637,0.6827,15.70669374,463.2000938
+brojap,0.033,0.055,,,c3,graminoid,ann_bi,exotic,0.25374711,0.299229842,15.50335616,248.7523407,0.5409,19.66324304,395.2037908
+bucdac,0.002,0.001,,kew-1 ref,c4,graminoid,perennial,native,NA,NA,NA,NA,NA,NA,NA
+cactus,0.012,0.003,,,unknown,shrub,perennial,native,NA,NA,NA,NA,NA,NA,NA
+cammic,0,0.009,,kew-8 refs,unknown,forb,ann_bi,exotic,NA,NA,NA,NA,NA,NA,NA
+carpen,0.031,0.002,,kew-2 refs,c3,graminoid,perennial,native,0.174774775,0.346055343,15.08772964,153.2038894,0.2786,27.82059409,262.8479583
+carste,0.005,0,,kew-2 refs,c3,graminoid,perennial,native,NA,NA,NA,NA,NA,NA,NA
+cendif,0.002,0,,kew-3 refs,unknown,forb,perennial,exotic,NA,NA,NA,NA,NA,NA,NA
+chenopodium_spp,0,0.006,used seed mass for c. leptophyllum (most common in bosxtg_spplist),kew-3 refs,unknown,forb,ann_bi,native,NA,NA,NA,NA,NA,NA,NA
+chondrosum_spp,0.062,0.004,c. gracilis and c. hirsutum; data comes from c. gracilis,,c4,graminoid,perennial,native,0.120633442,0.220949845,13.24333504,223.9514101,0.5731,23.59388363,338.4522139
+cicint,0.015,0.007,,,unknown,forb,perennial,exotic,0.092975207,0.639285583,16.38783952,42.25108345,0.871775,14.64891255,215.0989809
+cirund,0.002,0,data comes from c. vulgaris (julies traits),"kew-2 refs (for cirund, not cirvul)",unknown,forb,perennial,native,0.076502732,0.573802412,16.28752094,55.4395487,0.7469,13.13281592,165.9759453
+comumb,0.001,0.004,,kew-1 ref,unknown,forb,perennial,native,NA,NA,NA,NA,NA,NA,NA
+conarv,0.011,0.006,,kew-4 refs (dropped 2 extreme),unknown,forb,perennial,exotic,NA,NA,NA,NA,NA,NA,NA
+concan,0,0.004,,kew-13 refs,unknown,forb,ann_bi,native,NA,NA,NA,NA,NA,NA,NA
+dacglo,0.011,0,,,c3,graminoid,perennial,exotic,0.19172465,0.332295178,20.23109095,202.084534,0.422325,18.15082899,459.8682903
+dalpur,0.001,0.001,,kew-6 refs,unknown,forb,perennial,native,NA,NA,NA,NA,NA,NA,NA
+daucar,0.003,0.006,,kew-103 refs,unknown,forb,ann_bi,exotic,NA,NA,NA,NA,NA,NA,NA
+descurainia_spp,0,0.004,could be several species; used seed mass for d. sophia in Kew,kew-12 refs,unknown,forb,ann_bi,exotic,NA,NA,NA,NA,NA,NA,NA
+diaarm,0.005,0.072,,,unknown,forb,ann_bi,exotic,0.057680152,0.205258945,12.50516416,465.0757382,0.45675,14.82750437,238.3739456
+draba_spp,0,0.014,d. reptans and d. nemorosa; veg traits from d. reptans; seed mass is average of the species mean for drerep in kew (1 ref) and dranem in kew (4 refs),kew-1 ref,unknown,forb,ann_bi,native,0.200789141,0.155132698,8.946148992,1425.315465,0.168033333,9.38729081,293.9823114
+elepal,0.005,0,,kew-12 ref,c3,graminoid,perennial,native,NA,NA,NA,NA,NA,NA,NA
+elyely,0.007,0.001,,,c3,graminoid,perennial,native,0.228764479,0.483580595,15.55193151,90.46898283,0.62075,26.83896679,200.9919548
+erigeron_spp,0.009,0.043,e. flagellaris and e. colomexicanus; data collected from e. divergens (syn. Ericol),kew-1 ref,unknown,forb,ann_bi,native,0.051903529,0.46027616,11.31816851,132.3670767,0.3574,14.49314454,214.089982
+ermfen,0.02,0.001,,,unknown,forb,perennial,native,0.082738095,0.24988467,16.9124395,136.3777739,0.312925,29.49815889,98.81061214
+erocic,0,0.016,"veg trait data from erodium botrys, seed mass from e. cicutarium",kew-18 refs,unknown,forb,ann_bi,exotic,0.201300095,0.2884,10.248,196.6747254,0.57114,17.52,193.05
+erysimum_spp,0.001,0.011,e. capitatum and possibly e. asper; data from e. capitatum,,unknown,forb,ann_bi,native,0.046875,0.287418548,10.47789202,368.1501361,0.43795,19.47868181,151.4287864
+fesaru,0.007,0,,kew-18 refs,c3,graminoid,perennial,exotic,NA,NA,NA,NA,NA,NA,NA
+grisqu,0.002,0.003,,,unknown,forb,perennial,native,0.116693837,0.284076502,8.061694399,95.17591063,0.715925,14.62886195,265.5532688
+gutsar,0.002,0,,kew-3 refs,unknown,subshrub,perennial,native,NA,NA,NA,NA,NA,NA,NA
+hescom,0.029,0.001,,,c3,graminoid,perennial,native,0.201580488,0.353159516,16.44039128,99.99728917,0.3829,35.08095435,153.2855047
+heterotheca_spp,0.019,0.003,heterotheca villosa and h. foliosa; data from h. foliosa,,unknown,forb,perennial,native,0.11036036,0.34521516,11.35188998,177.0492411,0.590275,18.86399641,213.4002272
+holumb,0,0.003,,kew-2 refs,unknown,forb,ann_bi,exotic,NA,NA,NA,NA,NA,NA,NA
+hypper,0.006,0.068,,kew- 32 refs,unknown,forb,perennial,exotic,0.166372951,0.57861956,14.10300677,111.4602618,0.3457,25.86954218,279.6239864
+irimis,0.001,0.003,,kew-6 refs,unknown,forb,perennial,native,NA,NA,NA,NA,NA,NA,NA
+juncus_spp,0.01,0.078,"mostly j. arcticus and j. interior, but several others; data from j. arcticus",,c3,graminoid,perennial,native,0.198627002,0.228141688,9.846695408,146.0869489,0.629925,18.2959286,183.9293394
+koemac,0.022,0.005,,,c3,graminoid,perennial,native,0.120914981,0.35002313,15.51123027,206.1138883,0.26642,27.70236373,201.1786759
+lacser,0.002,0.002,,,unknown,forb,ann_bi,exotic,0.36597919,0.282830356,8.131533033,143.1050721,0.61405,13.13637399,310.3889221
+lepcam,0.005,0.021,,kew-6 refs,unknown,forb,ann_bi,exotic,0.021374046,0.521068492,25.1770795,133.5967449,0.2152,22.07152876,157.5505066
+lepden,0,0.005,,kew-4 refs,unknown,forb,ann_bi,exotic,NA,NA,NA,NA,NA,NA,NA
+lesmon,0.002,0.005,,,unknown,forb,perennial,native,0.044386488,0.191237429,24.58228123,210.9681421,0.2132,23.46704601,112.7527004
+liapun,0.02,0,,,unknown,forb,perennial,native,0.077083333,0.63888619,9.107465167,117.0366945,0.606825,20.97008809,110.8859868
+lincan,0,0.007,,kew-2 refs,unknown,forb,ann_bi,native,0.246614584,0.154175083,8.865282655,814.4856408,0.230466667,10.40413475,429.6396925
+lingen,0.002,0.002,,kew - 1 ref,unknown,forb,perennial,exotic,0.198636364,0.467947904,15.37138069,192.0896238,0.28815,19.92365251,162.4226929
+lotten,0.007,0.004,,,unknown,forb,perennial,exotic,0.1375,0.248394552,7.876267331,100.7100834,0.71485,16.80148929,259.1216778
+muhmon,0.045,0.02,,kew-2 refs,c4,graminoid,perennial,native,0.108270677,NA,NA,NA,0.3077,31.68044077,221.9630904
+muhwri,0.002,0,,granite seed,c4,graminoid,perennial,native,NA,NA,NA,NA,NA,NA,NA
+olipac,0.005,0.005,,,unknown,forb,perennial,native,0.075856537,0.264704317,10.60048532,251.655404,0.455133333,16.44514371,150.7952336
+oxadil,0,0.005,,kew-2 refs,unknown,forb,perennial,native,NA,NA,NA,NA,NA,NA,NA
+panvir,0.014,0.008,,,c4,graminoid,perennial,native,0.4119186,0.326704786,14.70615148,123.8584566,0.390525,24.34703984,291.8108207
+parjam,0.003,0.003,,kew-1 ref,unknown,forb,perennial,native,NA,NA,NA,NA,NA,NA,NA
+passmi,0.007,0,,,c3,graminoid,perennial,native,0.28987693,0.360918804,12.96752182,139.035513,0.5478,23.06153504,181.4307898
+plalan,0.013,0.009,,,unknown,forb,perennial,exotic,0.18697479,0.374789174,13.97647171,76.19592608,0.502025,16.71777904,175.8782017
+plapat,0.001,0.001,,kew-2 refs,unknown,forb,ann_bi,native,NA,NA,NA,NA,NA,NA,NA
+poaaga,0.019,0.015,,,c3,graminoid,perennial,native,0.175,0.292904988,17.12927917,310.6465291,0.476275,23.19200179,323.4145082
+poacom,0.068,0.167,,,c3,graminoid,perennial,exotic,0.095475065,0.265642649,15.16736631,438.5415816,0.5316,17.60082847,438.6319584
+pocbil,0,0.007,,Zhang et al. 2004 folia geobotanica,unknown,forb,ann_bi,exotic,NA,NA,NA,NA,NA,NA,NA
+podlac,0.002,0,,kew-4 refs,unknown,forb,perennial,exotic,NA,NA,NA,NA,NA,NA,NA
+potrec,0.004,0.016,,kew-8 refs,unknown,forb,perennial,exotic,NA,NA,NA,NA,NA,NA,NA
+psoten,0.006,0.004,,,unknown,forb,perennial,native,0.049557522,0.491253732,8.357074999,121.8714229,0.66942,21.20969657,168.2219474
+pteala,0.011,0,,,unknown,forb,perennial,native,0.034608696,0.365299014,12.48003436,246.3997084,0.31138,21.78599554,126.032625
+ratcol,0.003,0,,,unknown,forb,perennial,native,0.329166667,0.354988912,9.950068453,90.17387681,0.660475,15.32423567,228.5079587
+rossay,0.004,0,Seed mass from Rosa acicularis subsp. Sayi,kew-1 ref,unknown,subshrub,perennial,native,NA,NA,NA,NA,NA,NA,NA
+rumcri,0,0.002,,kew-38 refs,unknown,forb,perennial,exotic,NA,NA,NA,NA,NA,NA,NA
+schsco,0.025,0.004,,,c4,graminoid,perennial,native,0.132743363,0.35498816,10.20072995,112.5280294,0.563175,26.33381087,298.8227637
+senspa,0.004,0.001,,kew-1 ref,unknown,forb,perennial,native,NA,NA,NA,NA,NA,NA,NA
+silant,0.002,0.073,,kew- 5 refs,unknown,forb,ann_bi,native,NA,NA,NA,NA,NA,NA,NA
+solmol,0.005,0.001,,kew - 1 ref ,unknown,forb,perennial,native,NA,NA,NA,NA,NA,NA,NA
+sorave,0.016,0.003,,,c4,graminoid,perennial,native,0.24291074,0.333520261,12.1581049,147.4699526,0.5351,24.1353486,296.1223141
+spoasp,0.015,0.004,,,c4,graminoid,perennial,native,0.185757215,0.3041033,13.20404826,158.3355985,0.491916667,21.57728372,281.3377391
+spocry,0.003,0.03,,kew-9 refs,c4,graminoid,perennial,native,NA,NA,NA,NA,NA,NA,NA
+spohet,0.013,0,,,c4,graminoid,perennial,native,0.218253968,0.336969001,14.75252283,222.076645,0.2691,34.2,154.8157628
+talpar,0.001,0.025,,kew-2 refs,unknown,forb,perennial,native,NA,NA,NA,NA,NA,NA,NA
+taroff,0.003,0,,kew-11 refs,unknown,forb,perennial,native,NA,NA,NA,NA,NA,NA,NA
+tradub,0.013,0.004,,,unknown,forb,perennial,exotic,0.162610859,0.609801993,9.037015858,135.2603243,0.6475,12.69181318,199.9329231
+traram,0.006,0,,kew-2 refs,unknown,forb,perennial,native,NA,NA,NA,NA,NA,NA,NA
+vertha,0,0.011,,,unknown,forb,perennial,exotic,0.126383056,0.303884576,13.2939088,179.3386862,0.4641,22.84041433,175.6764748
+virfal,0.012,0,,,unknown,forb,perennial,native,0.181415929,0.488151944,16.46616169,48.97805985,0.5012,19.20750988,201.9598548
