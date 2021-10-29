@@ -1,8 +1,8 @@
 #' ---
-#' title: "Chronosequence Analysis"
+#' title: "R Script for: Seed bank bias: Differential tracking of functional traits in the seed bank and vegetation across a gradient"
 #' author: "Julie Larson"
-#' date: "28 October 2021"
-#' output: github_document
+#' date: "19 Jun 2021"
+#' output: html_document
 #' ---
 #' 
 #' 
@@ -33,7 +33,6 @@
 #'    All CSV files are available in the Github repository ('SeedBankBias')
 
 
-
 # Set user's Drive path
 gdrive <- "/Users/Julie\ Larson/Google\ Drive"
 
@@ -49,6 +48,10 @@ veg_sb <- read.csv(veg_sb_path)
 # Trait data
 trait_path <-  paste0(gdrive, "/Github/SeedBankBias/traits_commonspp.csv")
 trait <- read.csv(trait_path)
+
+# Supplemental data: Same as 'veg_sb', but with ALL species (no rare removed) separated by year (2017-2018)
+seedbank_veg_full_path <- paste0(gdrive, "/Github/SeedBankBias/seedbank_veg_all_species_years.csv")
+seedbank_veg_full <- read.csv(seedbank_veg_full_path)
 
 
 
@@ -81,7 +84,7 @@ library(dichromat)
 library(GGally)
 library(patchwork)
 library(ggcorrplot)
-
+library(missMDA)
 
 # Oridicenter() source code
 source ('http://www.davidzeleny.net/anadat-r/doku.php/en:customized_functions:ordicenter?do=export_code&codeblock=0')
@@ -137,7 +140,7 @@ se <- function(x, na.rm=FALSE) {
 #'  ---
 
 str(env)
-  
+
 #'  *Data level* - Collected or aggregated at the site level (n=12 sites)
 #'  Site identity is given by the either of the first two columns:
 #'    'site' [levels A-L] and 
@@ -173,7 +176,7 @@ str(env)
 #'  **Vegetation and seed bank data**  
 #'  ---
 
-str(veg_sb)
+str(veg_sb)  
 
 #'  
 #'  *Data Level* - Collected at plot level [seed bank sampled from 10 plots, veg sampled from a subset of 7 plots]
@@ -216,9 +219,20 @@ str(veg_sb)
 #'  Veg data: Prior to analysis, data will be squareroot-transformed and converted to relative abundances
 #'  on a per plot basis.  Quick summary is that this improves evenness (necessary for trait-based inferences).  
 #'  
+#'  
+
+#' Note that another community dataframe is also used in the supplement. 
+#'   It is similar to the dataframe described just above, but contains all species (no rare removed)
+#'   across separate sampling years (i.e. values not averaged across 2017 and 2018)
+#'   
+#'   Note that these are the raw data (counts / covers), and are used only on a species' presence-
+#'   absence basis to assess the effects of removing rare species on richness estimates
+
+str(seedbank_veg_full)  
 
 
-  
+
+
 #'  ---
 #'  **Trait data**
 #'  ---
@@ -259,34 +273,40 @@ str(trait)
 #' 
 #'  **Research Questions**
 #'  
-#'  **Gradient:** Does the soil chronosequence align with measured soil properties that could explain potential
+#'  
+#'  **Enviromental gradient:** Does the soil chronosequence align with measured soil properties that could explain potential
 #'  mechanisms of interaction with plants? (e.g., pH, soil texture, soil fertility)
 #'  
-#'  **Q1:** How do the taxonomic richness and composition of the vegetation and seedbank compare to one
+#'  **Taxonomic biases:** How do the taxonomic richness and composition of the vegetation and seedbank compare to one
 #'  another and change across the soil chronsequence? 
+#'  [i.e. Is there a pattern of community response with implications for management?]
 #' 
-#'  **Q2:** How do functional diversity and composition of the vegetation and seedbank compare to one
+#'  **Functional biases:** How do functional diversity and composition of the vegetation and seedbank compare to one
 #'  another and change across the soil chronosequence?
+#'  [i.e. What are the possible mechanisms of community response and implications for future managment?)
+#'
+#'  **Supporting Information:** 
+#'  A) Species-Accumulation Curves (site-level) for seedbanks and vegetation
+#'  B) Summary of impact: removing exceptionally rare species (found in <5% of samples)
+#'  C) Summary of impact: averaging seed bank and vegetation data over years
 #'  
-#'  **Q3:** Are the functional responses of vegetation and seedbanks similar (i.e. the seedbank mirrors the veg, 
-#'  and visa versa), or does the veg-seedbank discrepancy shift across the gradient? 
-#' 
-#' 
-#' 
 
 
 
 
-# GRADIENT
-###############
+
+#####
+#' ############ 
 #'  
-#'  *Gradient:* Does the terrace elevation rank align with measured soil properties that could explain potential
-#'  mechanisms of community turnover? 
+#'  **Enviromental gradient:** Do the soil chronosequence, and it's proxy -- elevation rank -- align with 
+#'  measured soil properties that could explain potential mechanisms of interaction with plants? 
+#'  (e.g., pH, soil texture, soil fertility)  
 #'  
 #' ############  
 
+
 #
-#' **Data prep - Need to reduce environmental variables down to smaller subset** 
+#' **Data prep - Need to reduce  18 possible environmental variables down to smaller subset** 
 #'    Approach is to explore and remove:  
 #'    a) highly correlated variables  
 #'    b) any exploratory variables that appear non-functional (e.g., if not correlated with others
@@ -295,7 +315,7 @@ str(trait)
 
 
 #' 
-#' *Figure: Correlation heat map* showing degree of positive/negative correlations and significance  
+#' *Figure Correlation heat map* showing degree of positive/negative correlations and significance  
 #' 
 
 # Env data structure
@@ -441,9 +461,9 @@ vwc_dat <- env %>%
   select(vwc_may_avg_shallow, vwc_may_avg_deep, bare_cov, veg_cov) %>%
   gather(key="depth", value="vwc", vwc_may_avg_shallow, vwc_may_avg_deep)
 vwc_dat$depth <-  factor(vwc_dat$depth,
-                            levels = c("vwc_may_avg_shallow", "vwc_may_avg_deep"),
-                            labels = c("shallow","deep"))
- 
+                         levels = c("vwc_may_avg_shallow", "vwc_may_avg_deep"),
+                         labels = c("shallow","deep"))
+
 # Create bare ground figure
 vwc_bare <- ggplot( aes(y=100*vwc, x=bare_cov), data=vwc_dat) + 
   geom_point(aes(col=depth),cex=2.5) +
@@ -574,10 +594,14 @@ dev.off()
 
 
 
-#' Q1
-################
+
+
+
+#' TAXONOMIC
+#####
+#'  ############
 #'  
-#'  **Q1:** How do the taxonomic richness and composition of the vegetation and seed bank compare to one
+#'  **Taxonomic  biases:** How do the taxonomic richness and composition of the vegetation and seedbank compare to one
 #'  another and change across the soil chronosequence? 
 #'  [i.e. Is there a pattern of community response with implications for management?]
 #'  
@@ -585,7 +609,7 @@ dev.off()
 
 
 #' 
-#' *Preliminary Test: Vegetation richness as a function of soil age rank*  
+#' *Data preparation: Vegetation taxonomic richness*  
 #' 
 #' Note, rare species have already been removed to include only plants found in >5% of veg or sb samples
 
@@ -598,7 +622,7 @@ veg_site <- veg %>%
   select(-type, -plot, -age_rank) %>%
   group_by(site) %>%
   summarise_all(mean)
-
+  
 # Reduce site cover to presence/absence
 veg_site_pa <- veg_site %>%
   mutate_if(is.numeric, ~1 * (. > 0))
@@ -611,22 +635,14 @@ veg_site_pa %>%
   env$veg_rich
 
 
-#' 
-#' *Preliminary Model* lm(veg_rich ~ elevation rank)  
-#' 
-env$elev_rank <- env2$elevation_rank
-lm_veg_rich2 <- lm(veg_rich ~ elev_rank, data=env)
-summary(lm_veg_rich2)
-
-
 #'  
-#'  *Supplemental Info:* Veg taxonomic evenness across sites  
+#'  *Data preparation: Vegetation taxonomic eveness* 
 #' 
 
 # Sqrt transform veg data (veg_sqrt)
-veg2 <- veg %>%
-  select(-type, -site,-plot, -age_rank)
-veg_sqrt <- sqrt(veg2)
+veg_sqrt <- veg %>%
+  select(-type, -site, -plot,-age_rank)
+veg_sqrt <- sqrt(veg_sqrt)
 
 # Save sqrt-transformed data with site variable (veg_sqrt1)
 veg_sqrt1 <- cbind(veg[,2],veg_sqrt)
@@ -643,15 +659,23 @@ site_avg_veg <- veg_sqrt_rel1 %>%
   summarise_all(mean) %>%
   select(-site)
 
-# Site avg evenness
+site_avg_veg_compiled <- site_avg_veg 
+site_avg_veg_compiled$type <- "veg"
+site_avg_veg_compiled$site <- env$site
+  
+# Calculate species mean relative abundances (across all sites)
+spp_avg_veg <- veg_sqrt_rel1 %>% 
+  select(-site) %>% 
+  summarise_all(mean) 
+
+# save site avg evenness
 env$veg_even <- diversity(site_avg_veg)/log(env$veg_rich)  # Calculate Pielou's evenness
 
 
-
 #' 
-#' *Preliminary Test: Seed bank richness as a function of elevation rank*  
+#' *Data preparation: Seed bank taxonomic richness*  
 #' 
-#' Note, rare species have already been removed to include only species found in >5% of veg or seed bank samples
+#' Note, rare species have already been removed to include only speices found in >5% of veg or sb samples
 
 # Filter sb data
 sb <- veg_sb %>% 
@@ -663,13 +687,13 @@ sb_site <- sb %>%
   group_by(site) %>%
   summarise_all(mean)
 
-# Sum across columns of full counts to generate a total seed bank size per site
+# Sum across columns of full counts to generate a total seedbank size per site
 sb_site %>%
   ungroup() %>%
   select(acevul:virfal) %>% 
   rowSums(na.rm=TRUE) -> 
   env$sb_size
-env$sb_size <- 200*env$sb_size  #Multitpy times 200 to go from seeds per 100cm3 to seeds per 20000 cm3
+env$sb_size <- 200*env$sb_size  #Mulitply times 200 to go from seeds per 100cm3 to seeds per 20000 cm3
 
 # Reduce site cover to presence/absence
 sb_site_pa <- sb_site %>%
@@ -683,32 +707,15 @@ sb_site_pa %>%
   env$sb_rich
 
 
-#' 
-#' *Supp Model:* lm(sb_rich ~ elev rank)  
-#' 
-lm_sb_rich <- lm(sb_rich ~ elev_rank, data=env)
-summary(lm_sb_rich)
-
-
-
-#' 
-#' *Supplemental Info*: SB size across sites and as a function of elevation rank
-#' 
-lm_sb_size2 <- lm(sb_size ~ elev_rank, data=env)
-summary(lm_sb_size2)
-ggplot(data=env) +
-  geom_point(aes(x=elev_rank, y=sb_size)) +
-  labs(x="Elevation", y="Seedbank size (per m2)")
-
 
 #'  
-#'  *Supplemental Info:* Estimate SB taxonomic evenness across sites  
+#'  *Data preparation: Seed bank taxonomic evevness* 
 #' 
 
 # Sqrt transform sb data (sb_sqrt)
-sb2 <- sb %>%
-  select(-type, -site, -plot, -age_rank)
-sb_sqrt <- sqrt(sb2)
+sb_sqrt <- sb %>%
+  select(-type, -site,-plot, -age_rank)
+sb_sqrt <- sqrt(sb_sqrt)
 
 # Save sqrt-transformed data with site variable (veg_sqrt1)
 sb_sqrt1 <- cbind(sb[,2],sb_sqrt)
@@ -725,28 +732,34 @@ site_avg_sb <- sb_sqrt_rel1 %>%
   summarise_all(mean) %>%
   select(-site)
 
+site_avg_sb_compiled <- site_avg_sb 
+site_avg_sb_compiled$type <- "sb"
+site_avg_sb_compiled$site <- env$site
+
 # Site avg evenness
 env$sb_even <- diversity(site_avg_sb)/log(env$sb_rich)  # Calculate Pielou's evenness
 
 
+# Compile and export site-level relative abundances
+site_avg_compiled <- rbind(site_avg_sb_compiled, site_avg_veg_compiled)
+write.csv(site_avg_compiled,"site_relative_abundances.csv")
+
+
+
 #'
-#' *Supplemental Assessment: Taxonomic evenness as a function of elevation rank and community type*
+#'    *Supplemental Figure:* Veg & SB taxonomic evenness across sites
 #'    
 
-#' *FIGURE* 
-
-#' Elevation rank figure
-#  Prepare dataframe
 even_fig_dat <- env %>% 
   select(veg_even, sb_even) %>%
   gather(key="type", value="evenness")
-even_fig_dat$age_rank <- env$age_rank  
-even_fig_dat$elev <- env$elevation_m
 even_fig_dat$elev_rank <- rep(as.numeric(rank(env$elevation_m)),2)
 even_fig_dat$type <-  factor(even_fig_dat$type,
                              levels = c("veg_even","sb_even"),
-                             labels = c("Vegetation","Seedbank"))
+                             labels = c("Vegetation","Seed bank"))
 
+
+#' Elevation rank figure
 even_fig2 <- ggplot(aes(x=elev_rank, y=evenness, col=type), data=even_fig_dat) + 
   geom_point() + 
   geom_smooth(method="lm",se=F) +
@@ -756,32 +769,38 @@ even_fig2 <- ggplot(aes(x=elev_rank, y=evenness, col=type), data=even_fig_dat) +
   ylim(0,1)
 even_fig2
 
+
 tiff(filename="evenness_fig_elev_rank.tiff", res=600, width=6, height=4, units = "in")
 even_fig2
 dev.off()
 
 
+
 #'
-#' *Model*
+#'   *Supplemental Assessment:* Veg & SB taxonomic evenness across sites
+#'    
+
+#'
+#' *Elevation Rank*
 #' 
-# Basic linear model 
+
+# Basic linear model
 even_lm_rank <- lm(evenness ~ type * elev_rank, data=even_fig_dat)
 summary(even_lm_rank)
+Anova(even_lm_rank, type="III")
+
 
 
 
 #'  
-#'  **Taxonomic richness as a function of elevation rank and community type**
+#'  *Seedbank and vegetative taxonomic richness* (Is it smaller/larger? Does it add native spp to veg richness?)  
 #'  
 
-#' 
-#' * Data preparation*
-#' 
-#' We already have separate veg and sb richness, but need a combined richness estimate
+#' We already have separate veg and seed bank b richness, but need a combined richness estimate
 
 # Compile veg/sb by site
 veg_sb_site <- veg_sb %>%
-  select(-type, -plot,-age_rank) %>%
+  select(-type, -plot, -age_rank) %>%
   group_by(site) %>%
   summarise_all(mean)
 
@@ -796,10 +815,8 @@ veg_sb_site_pa %>%
   rowSums(na.rm=TRUE) ->
   env$veg_sb_rich
 
-#' 
-#' *Create figure of richness in all community types*
-#' 
-# Select and reconfigure data for figures
+#' Create figure
+# Select and reconfigure data
 rich_fig_dat <- env %>%
   select(veg_rich, sb_rich, veg_sb_rich) %>%
   gather(key="type", value="richness")
@@ -809,29 +826,31 @@ rich_fig_dat$elev_rank <- rep(as.numeric(rank(env$elevation_m)),times=3)
 rich_fig_dat <- data.frame(rich_fig_dat)
 rich_fig_dat$type <-  factor(rich_fig_dat$type,
          levels = c("veg_rich","sb_rich","veg_sb_rich"),
-         labels = c("Vegetation","Seedbank","Veg+Seedbank"))
+         labels = c("Vegetation","Seed bank","Veg+Seed bank"))
 
 
-#' Show summary of richness and evenness values
+#' Summary of values
 veg_sb_compare <- env %>% 
   select(veg_rich:veg_sb_rich) %>%
   summarise_all(mean)
 veg_sb_compare
 
 #'  Average richness at the site-level is higher in the veg (38.7 species) than the 
-#'  seed bank (27.9 species). When the vegetation and seed bank at a site are considered 
-#'  together, richness increases to 49.3 species on average, suggesting that the seed bank 
+#'  seedbank (27.9 species). When the vegetation and seedbank at a site are considered 
+#'  together, richness increases to 49.3 species on average, suggesting that the seedbank 
 #'  contains some unique species and turnover (not simply nested from veg) 
 
 
-#' 
-#' *Figure*
-#' 
+#'   
+#'   *Figure*: Scatterplot with species richness (y) as a function of elevation rank (x), with sites as 
+#'      points colored by seedbank (blue), veg (black), seedbank+veg (gray)
+
 rich_fig <- ggplot (aes(x=elev_rank, y=richness, col=type), data=rich_fig_dat) +
   geom_point() +
   geom_smooth(method="lm", se=F) +
   labs(x= "Elevation (m)", y="Species richness", col="Community type") + 
-  scale_color_manual(values=c("#636363","#9ECAE1","black")) 
+  scale_color_manual(values=c("black","dodgerblue3","gray68")) +
+  theme_bw()
 rich_fig
 
 tiff(filename="richness_fig_elev.tiff", res=600, width=6, height = 4, units = "in")
@@ -840,7 +859,7 @@ dev.off()
 
 
 #'  
-#'  *Model: Species richness as a function of type (seedbank or veg) and elevation rank*  
+#'  **Model: Species richness as a function of type (seedbank or veg) and age rank**  
 #'  
 
 #' ELEVATION RANK
@@ -850,53 +869,28 @@ rich_lm_rank <- lm(richness ~ type * elev_rank, data=rich_fig_dat)
 summary(rich_lm_rank)
 Anova(rich_lm_rank, type="III")
 
-# Removing interaction does not change results qualitatively at all!
-rich_lm_rank2 <- lm(richness ~ type + elev_rank, data=rich_fig_dat)
-summary(rich_lm_rank2)
-Anova(rich_lm_rank2, type="III")
-
-
 
 
 #'  
-#'  **PerMANOVA and NMDS:  Species community composition as a function of type (seedbank or veg) and age rank**  
-#'  
+#'  **Test: Species community composition as a function of type (seedbank or veg) and age rank**  
 
-
-
-#'  *PerMANOVA*
-#'  permanova(veg_sb_matrix ~ type * age_rank, strata=site, data=veg_sb)  
-#'      [NOTE that in both plot- and site-level analyses here]
+#'
+#'  **Model** permanova(veg_sb_matrix ~ type * elev_rank, data=veg_sb)
+#'    
 
 #'
 #'  Set up analysis to include *all plots* as replicates (not accounting for pseudo-replication within sites)
 #'  
 veg_sb_sqrt <- veg_sb %>%
-  select(-type,-site,-age_rank)
+  select(-type,-site,-plot,-age_rank)
 veg_sb_sqrt <- sqrt(veg_sb_sqrt)
 veg_sb_rel <- decostand(veg_sb_sqrt, "total")
 
-#' Create dataframe of explanatory factors, including elevation
+#' Create dataframe of explanatory factors, including elevation rank
+veg_sb$site <- as.factor(veg_sb$site)
 factors <- veg_sb %>%
-  select(type, age_rank,site)
+  select(type, age_rank, site)
 levels(factors$site)
-factors$site <- fct_recode(factors$site, 
-           "1680" = "A",
-           "1672" = "B",
-           "1677" = "C",
-           "1687" = "D",
-           "1689" = "E",
-           "1704" = "F",
-           "1806" = "G",
-           "1809" = "H",
-           "1908" = "I",
-           "1920" = "J",
-           "1907" = "K",
-           "1909" = "L")
-names(factors)[names(factors) == "site"] <- "elev"
-factors$elev <- as.character(factors$elev)
-factors$elev <- as.numeric(factors$elev)
-factors$site <- veg_sb$site
 factors$site <- fct_recode(factors$site, 
            "3" = "A",
            "1" = "B",
@@ -911,15 +905,15 @@ factors$site <- fct_recode(factors$site,
            "9" = "K",
            "11" = "L")
 names(factors)[names(factors) == "site"] <- "elev_rank"
-factors$elev_rank <- as.character(factors$elev_rank)
-factors$elev_rank <- as.numeric(factors$elev_rank)
+factors$elev_rank <- as.numeric(as.character(factors$elev_rank))
 str(factors)
 
 
-#' Run Plot-level PerMANOVA
+#' Run PerMANOVA
 # Elevation rank, NO blocking factors
 spp_perm_plot2 <-adonis(veg_sb_rel ~ type * elev_rank, data=factors, permutations = 999, method="bray")
 spp_perm_plot2
+
 
 
 #' 
@@ -930,13 +924,25 @@ type <- as.factor(rep(c("veg","sb"),each=12))
 age_rank <- as.numeric(rep(1:6, each=2,2))
 factors_site <- data.frame(type, age_rank)
 factors_site$site <- env$site
-factors_site$elev <- env$elevation_m
 factors_site$elev_rank <- env$elev_rank
 str(factors_site)
 
+#' 
+#' Calculate average relative abundances in the vegetation and seedbank across sites
+#' (for other analyses)
+#' 
+site_veg_sb_rel2 <- site_veg_sb_rel
+site_veg_sb_rel2$type <- as.factor(rep(c("veg","sb"),each=12))
+tot_rel <- site_veg_sb_rel2 %>%
+  group_by(type) %>%
+  summarise_all(mean)
+rowSums(tot_rel[2:91])
+
+write.csv(tot_rel, "spp_rel_abundances_avg_across_sites.csv")
+
 
 #' 
-#' Run Site-level PerMANOVA
+#' Run PerMANOVA
 #' 
 
 # ELEVATION rank
@@ -949,17 +955,16 @@ spp_perm_site2
 #' 
 site_veg_sb_rel <- rbind(site_avg_veg, site_avg_sb)
 site_veg_sb_pa <- site_veg_sb_rel %>%
-  replace(((.)>0),1)
+  mutate_if(is.numeric, ~1 * (. > 0))
 type <- as.factor(rep(c("veg","sb"),each=12))
 age_rank <- as.numeric(rep(1:6, each=2,2))
 factors_site <- data.frame(type, age_rank)
 factors_site$site <- env$site
-factors_site$elev <- env$elevation_m
 factors_site$elev_rank <- env$elev_rank
 
 
 #' 
-#' Run Site-leve, presences-absence PerMANOVA
+#' Run PerMANOVA
 #' 
 
 # ELEVATION rank
@@ -969,50 +974,34 @@ spp_perm_site_pa2
 
 
 
-#'   
-#' *Nonmetric multidimensional scaling (NMDS)*
-#'
+#' 
 #'  
-
-#' *Site-level NMDS*
-site_nmds <- metaMDS(site_veg_sb_rel,k=2,trymax=100)
-
-site_nmds
-stressplot(site_nmds)
+#'  **Figure: NMDS of species space** - Are seedbanks nested within the veg or visa versa? 
+#'         Or do seedbanks separate out in species space? 
+#'         
 
 
-#' *Create figure*
-# Saving NMDS scores and labels
-site_species <- site_nmds$species
-site_scores <- cbind(factors_site, site_nmds$points)
-site_scores$type_age <- paste(site_scores$type, site_scores$age_rank)
-site_scores$site_names <- as.character(env$site_names)
-site_scores$type <- dplyr::recode(site_scores$type, sb="S", veg="V")
-site_scores$site_names2 <- as.character(c("1a","1b","2a","2b","3a","3b","4a","4b","5a","5b","6a","6b"))
-site_scores$site_names3 <- paste(site_scores$type, site_scores$site_names2, sep = "")
-site_scores$elev_rank <- env2$elevation_rank
-site_scores$type_elev <- paste(site_scores$type, site_scores$elev_rank, sep="")
-site_scores
-
-# Generate a vector of colors for Elevations
-# For plot-level
+#' Generate color vectors for figures 
+#' 
+# For plot-level, showing elevational change
 colfunc_sb <- colorRampPalette(c("white", "dodgerblue4"))
 sb_col <- colfunc_sb(12)
 colfunc_veg <- colorRampPalette(c("white", "gray16"))
 veg_col <- colfunc_veg(12)
 nmds_col <- data.frame(cbind(sb_col, veg_col))
-rank(env$elevation_m) 
 # Create vector that moves colors to appropriate place based on elevation rank
+rank(env$elevation_m) 
 nmds_col$elev_rank <- c(2,3,1,4,5,6,7,8,11,9, 12,10)
 nmds_col_list <- nmds_col %>% 
   arrange(elev_rank) %>% 
   select(-elev_rank) %>% 
   gather(key="type", value="col") #%>%
-  #arrange(desc(type))
+#arrange(desc(type))
 nmds_col_list$col
 elev_col <- as.character(nmds_col_list$col)
 
-# For site-level
+
+# For site-level, showing elevational change
 colfunc_sb2 <- colorRampPalette(c("skyblue1", "navy"))
 sb_col2 <- colfunc_sb2(12)
 colfunc_veg2 <- colorRampPalette(c("gray76", "black"))
@@ -1028,37 +1017,45 @@ nmds_col_list2 <- nmds_col2 %>%
 nmds_col_list2$col
 elev_col2 <- as.character(nmds_col_list2$col)
 
-
-# Saving color vectors
-colvecage_type <- c("#c6dbef", "#9ecae1", "#6baed6", "#4292c6", "#2171b5", "#08519c","#d9d9d9", "#bdbdbd", "#969696", "#737373", "#525252", "#252525")
-colvecage_type2 <- rep(c("#d9d9d9", "#bdbdbd", "#969696", "#737373", "#525252", "#252525", "#c6dbef", "#9ecae1", "#6baed6", "#4292c6", "#2171b5", "#08519c"), each=2)
-colvecage_type3 <- rep(c("#c6dbef", "#9ecae1", "#6baed6", "#4292c6", "#2171b5", "#08519c","#d9d9d9", "#bdbdbd", "#969696", "#737373", "#525252", "#252525"), each=2)
-colvecage_type4 <- rep(c("#9ecae1", "#08519c", "#c6dbef", "#6baed6", "#4292c6", "#2171b5", "#bdbdbd", "#525252", "#d9d9d9", "#969696", "#737373",  "#252525"), each=2)
-colvecage_type4 <- rep(c("#9ecae1", "#08519c", "#c6dbef", "#6baed6", "#4292c6", "#2171b5", "#bdbdbd", "#525252", "#d9d9d9", "#969696", "#737373",  "#252525"), each=2)
-colvec_elev <- c("#08519c","#9ecae1","#9ecae1","#08519c", "#c6dbef", "#c6dbef", "#6baed6", "#6baed6", "#4292c6", "#2171b5" ,"#4292c6", "#2171b5", "#525252","#bdbdbd" ,"#bdbdbd",  "#525252" ,"#d9d9d9", "#d9d9d9", "#969696" ,"#969696" ,"#737373","#252525",  "#737373" ,"#252525")
-colvecage <- c("#FED976", "#FEB24C", "#FD8D3D", "#F03B20", "#BD0026","#800026")
-colvecage2 <- rep(c("#FED976", "#FEB24C", "#FD8D3D", "#F03B20", "#BD0026","#800026"),each=2,2)
-colvectype <- c("#2171b5","#525252")
+# Create one final color vector
 colvectype <- c("blue","black")
 
 
-tiff(filename="site_nmds_elev_spp.tiff", res=600, width=6, height = 5, units = "in")
+
+#' 
+#' *Site-level NMDS*
+#' 
+site_nmds <- metaMDS(site_veg_sb_rel,k=2,trymax=100)
+
+site_nmds
+stressplot(site_nmds)
+
+# Saving NMDS scores and labels
+site_species <- site_nmds$species
+site_scores <- cbind(factors_site, site_nmds$points)
+site_scores$type_age <- paste(site_scores$type, site_scores$age_rank)
+site_scores$site_names <- as.character(env$site_names)
+site_scores$type <- dplyr::recode(site_scores$type, sb="S", veg="V")
+site_scores$site_names2 <- as.character(c("1a","1b","2a","2b","3a","3b","4a","4b","5a","5b","6a","6b"))
+site_scores$site_names3 <- paste(site_scores$type, site_scores$site_names2, sep = "")
+site_scores$elev_rank <- env2$elevation_rank
+site_scores$type_elev <- paste(site_scores$type, site_scores$elev_rank, sep="")
+site_scores
+
+
 
 # Plotting NMDS
+tiff(filename="site_nmds_elev_spp.tiff", res=600, width=6, height = 5, units = "in")
+
 par(mar=c(4,4,2,2))
 ordiplot(site_nmds, display="si", type="n")
 orditorp(site_nmds, display="species", col="gray")
 with(factors_site, ordiellipse(site_nmds, type, draw="polygon", col=colvectype, alpha=0.1,lwd=0.5, kind="se", conf=0.95), label=TRUE)
 orditorp (site_nmds, display="sites", label=site_scores$type_elev, col=elev_col2, air=0.01, cex=0.75)
 with(site_scores, ordicenter(site_nmds, type, col="black", cex=1.2))
-#with(site_scores, ordiellipse(site_nmds, type_age, col=colvecage_type4, lwd=0.5, draw="polygon", kind="se", conf=0.95),alpha=0.5)
-#with(factors_site, ordiellipse(site_nmds, type, col="black", kind="se", conf=0.95, lwd=0.1, label=TRUE))
-#with(site_scores, ordicenter(site_nmds, age_rank, col="darkgreen", cex=0.75))
-#orditorp (site_nmds, display="sites", label=site_scores$type_age, col=colvecage_type2, air=0.01, cex=0.75)
-#with(site_scores, ordicenter(site_nmds, type_age, col=colvecage2))
-#with (factors_site, ordihull(site_nmds, age_rank, draw="polygon", col=colvecage, alpha=0.2, lwd=0.11, label=TRUE))
 
 dev.off()
+
 
 
 #' 
@@ -1069,7 +1066,6 @@ plot_nmds <- metaMDS(veg_sb_rel,k=2,trymax=100)
 plot_nmds
 stressplot(plot_nmds)
 
-#' *Create figure*
 # Saving NMDS scores and labels
 plot_species <- plot_nmds$species
 plot_scores <- cbind(factors, plot_nmds$points)
@@ -1086,19 +1082,15 @@ head(plot_scores)
 str(plot_scores)
 levels(plot_scores$type_site2)
 
+
+# Plotting NMDS with ELEVATION RANKncolor gradient
 tiff(filename="plot_nmds_by_elev_wSPP.tiff", res=600, width=6, height = 6, units = "in")
 
-# Plotting NMDS with ELEVATION color gradient
 par(mar=c(4,4,2,2))
 ordiplot(plot_nmds, type="n", ylim=c(-1.5,1.5))
 orditorp (plot_nmds, display="species", col="darkgray", air=0.01, cex=0.6)
-#with(plot_scores, ordiellipse(plot_nmds, type_site, col=colvecage_type4, lwd=0.5, draw="polygon", kind="se", conf=0.95),alpha=0.5)
 with(plot_scores, ordiellipse(plot_nmds, type_site2, col=elev_col, lwd=0.5, draw="polygon", kind="se", conf=0.95),alpha=0.5)
 with(plot_scores, ordicenter(plot_nmds, type_elev, col="black", cex=0.7))
-#with(factors, ordiellipse(plot_nmds, type, draw="polygon", col=colvectype, alpha=0.3,lwd=0.1, kind="se", conf=0.95), label=TRUE)
-#with (factors, ordiellipse(plot_nmds, type, col=colvectype, kind="se", conf=0.95, lwd=0, label=TRUE))
-#with(plot_scores, ordiellipse(plot_nmds, type_age, col=colvecage_type, draw="polygon", kind="se", conf=0.99),alpha=0.5)
-#with(plot_scores, ordicenter(plot_nmds, type_age, col="black", cex=0.72))
 
 dev.off()
 
@@ -1106,9 +1098,10 @@ dev.off()
   
   
 #'  
-#'  **Q2: How do functional diversity and composition of the vegetation and seedbank compare to one**
-#'  **another and change across the soil chronosequence?**  
-#'  [i.e. What are the possible mechanisms of community response and implications for future managment?)  
+#' 
+#'   **Functional biases: How do functional diversity and composition of the vegetation and seedbank compare to one**
+#'                        **another and change across the soil chronosequence?**  
+#'  
 #'  
 
 #'  
@@ -1116,14 +1109,15 @@ dev.off()
 #'  
 
 # Grab a subset of columns that contain mature trait data
-
+str(trait)
 #' **HIGHLIGHT TO RUN**
 trait_dat <- trait %>%
   select(species,height_per_day:seed_mass)
 trait_dat <- trait_dat[order(trait_dat$species),]
 str(trait_dat)
 
-pairs(trait_dat[2:9])
+pairs(trait_dat[2:9])  # Outlier issues with seed mass and SRL, eventually will need to transform data
+
 
 #' 
 #' *Estimate trait coverage in the vegetation*  
@@ -1307,7 +1301,8 @@ rbind(sb_height, sb_rmr, sb_rdmc, sb_srl, sb_rdiam, sb_ldmc, sb_sla, sb_smass)
 
 
 #'  *Reduce veg and trait dataframes* to only contain species with at least one trait available
-# Cactus and  ascste has to be removed from each
+#    (Cactus and  ascste has to be removed from each)
+# 
 # Remaining species=79
 
 veg_only_t1 <- veg_sqrt %>%
@@ -1348,6 +1343,13 @@ round(cor(trait_veg_s, use="pairwise.complete.obs"), 2)
 pairs(trait_veg_s) 
 
 
+# Sidenote - there is a weird pattern in the leaf trait data of two clean, separate lines..
+# I wanted to investigate, and it looks like a weird but VERY clear life form pattern
+ggplot(data=trait) +
+  geom_point(aes(x=LDMC, y=SLA), cex=2) +
+  geom_smooth(method="lm", aes(x=LDMC, y=SLA), se=F)
+
+
 
 #'  *Reduce sb and trait dataframes* to contain only species with >=1 trait
 # Cactus has to be removed from each
@@ -1365,8 +1367,7 @@ sb_only_site <- sb_only_t %>%
 rowSums(sb_only_site)
 
 sb_only_site <- sb_only_site[,order(names(sb_only_site))]
-
-sb_only_site_m <- as.matrix(sb_only_site)
+sb_only_site_m <- as.matrix(sb_only_site) #Create matrix
 
 # Check trait correlations for high correlations and linearity
 trait_sb <- trait_sb %>%
@@ -1439,15 +1440,16 @@ pairs(trait_veg_sb_s)
 dev.off()
 
 
+
 #'  
-#'  ** Veg functional diversity as a function of soil age rank**  
+#'  **Test: Veg functional diversity as a function of elevation rank**  
 #'  
 #'  Notes on Diversity metrics:
 #'  *FDis:* 
 #'  With abundance data, this metric is the weighted average distance of all
-#'  species in a community to the centroid (whose location is shifted totwards the 
+#'  species in a community to the centroid (whose location is shifted towards the 
 #'  most abundant species). It has no upper limit. By construction, it is unaffected
-#'  by species richness.  It is computed from the uncorrected specis matrix, and
+#'  by species richness.  It is computed from the uncorrected species matrix, and
 #'  any axes with negative eigenvalues are corrected following Anderson 2006. Main 
 #'  citation is Laliberte & Legendere 2010. 
 #'   
@@ -1457,19 +1459,20 @@ dev.off()
 #'  
 #'  *FDiv:*
 #'  For all species in a community in trait space, this metric calculates an average
-#'  distace from the centroid. It then looks at the distribution of species 
+#'  distance from the centroid. It then looks at the distribution of species 
 #'  differences away from this mean. Specifically, the more abundant species that
 #'  are FURTHER from the centroid than average, the higher FDiv is. 
 #'  CAN account for species relative abundances (Villeger et al. 2008)
 #'  
-#'  *FEve:*
-#'  If species are distributed in trait space and the shortest tree was drawn that
-#'  linked all species in a community, FEve is the regularity of the links between 
-#'  species. CAN account for species relative abundances (Villeger et al. 2008)
+#'  
+#'  Based on these descriptions, my apriori preference is to use FDis as the
+#'  focal functional diversity metric. It aligns conceptually with what I envision
+#'  capturing with Functional Diversity, it is intuitive, AND it is unaffected
+#'  by species richness(!)
 #'  
 
 #'  
-#'  *Vegetative Functional Diversity*  
+#'  *Vegetation Functional Diversity*  
 #'  
 
 #' Calculate Gower distance for trait matrix
@@ -1478,17 +1481,18 @@ gower_trait_v <- gowdis(trait_veg_s)
 #' Calculate diversity indices at the site-level  
 #' FDiv and FDis metric for veg only, m=13 is highest working tried, with Fric=24% of variation 
 #' HOWEVER, the m value does not affect the calculation of FDis, so is set lower here for speed
-
-# Relative abundances
 dbfd1 <- dbFD(gower_trait_v, veg_only_site_m, w.abun=TRUE, corr="cailliez", m="min")
 dbfd1$qual.FRic
 
-# Presence-Absence
+#' Metric based on presence-absence data
+veg_only_pa <- veg_only_site_m %>%
+  replace(((.)>0),1)
+veg_only_pa_m <- as.matrix(veg_only_pa)
 dbfd1_pa <- dbFD(gower_trait_v, veg_only_pa_m, w.abun=TRUE, corr="cailliez", m="min")
-dbfd1$qual.FRic
 
 
-#' Fric
+#' Save diversity metrics
+#' Fric 
 env$fric_v <- dbfd1$FRic
 
 #' Fdiv
@@ -1496,11 +1500,10 @@ env$fdiv_v <- dbfd1$FDiv
 
 #' Fdis
 env$fdis_v <- dbfd1$FDis
-env$fdis_v_pa <- dbfd1_pa$FDis
+env$fdis_v_pa<- dbfd1_pa$FDis
 
 #' RaoQ
 env$raoq_v <- dbfd1$RaoQ
-
 
 
 #' 
@@ -1513,13 +1516,19 @@ gower_trait_s <- gowdis(trait_sb_s)
 
 
 #' Calculate diversity indices at the site-level  
-# Relative abundances
+#' Diversity metrics for sb only, m=13 is highest working tried, with Fric=26% of variation 
+#' HOWEVER, the m value does not affect the calculation of FDis, so is set lower here for speed
 dbfd2 <- dbFD(gower_trait_s, sb_only_site_m, w.abun=TRUE, corr="cailliez", m="min")
 dbfd2$qual.FRic
 
-# Presence-Absence
+# based on presence-absence data
+sb_only_pa <- sb_only_site_m %>%
+  replace(((.)>0),1)
+sb_only_pa_m <- as.matrix(sb_only_pa)
 dbfd2_pa <- dbFD(gower_trait_s, sb_only_pa_m, w.abun=TRUE, corr="cailliez", m="min")
 
+
+#' Save diversity matrices
 #' Fric
 env$fric_s <- dbfd2$FRic
 
@@ -1533,10 +1542,10 @@ env$fdis_s_pa <- dbfd2_pa$FDis
 #' RaoQ
 env$raoq_s <- dbfd2$RaoQ
 
-#'
-#'  *Combined (veg + seedbank) Functional Diversity*
-#'  
 
+#'
+#'  *Veg + Seedbank functional diversity*
+#'  
 
 #'  Functional Diversity (across all traits) for each site, veg and seedbank relative abundances combined  
 # Calculate Gower distance for trait matrix
@@ -1546,15 +1555,15 @@ gower_trait_vs <- gowdis(trait_veg_sb_s)
 dbfd3 <- dbFD(gower_trait_vs, veg_sb_site_m, w.abun=TRUE, corr="cailliez", m='min')
 dbfd3$qual.FRic
 
-# Create pres-abs matrix to swap out if needed
-veg_sb_site_pa <- veg_sb_site2 %>%
+# Based on presence absence
+veg_sb_pa <- veg_sb_site_m %>%
   replace(((.)>0),1)
-veg_sb_pa_m <- as.matrix(veg_sb_site_pa)
-
-# Presence-Absence
+veg_sb_pa_m <- as.matrix(veg_sb_pa)
 dbfd3_pa<- dbFD(gower_trait_vs, veg_sb_pa_m, w.abun=TRUE, corr="cailliez", m='min')
 
 
+
+#' Save diversity metrics
 #' Fric
 env$fric_vs <- dbfd3$FRic
 
@@ -1571,8 +1580,7 @@ env$raoq_vs <- dbfd3$RaoQ
 
 
 #'
-#'  **Model: Functional dispersion as a function of type (seedbank or veg) and age rank**
-#'  With figure and linear mixed model
+#'  **Model & Figure: Functional dispersion as a function of type (seedbank or veg) and elevation rank**
 #'      
 
 # Create dataframe for FDis figure and analysis
@@ -1580,13 +1588,13 @@ fdis_fig_dat <- env %>%
   select(fdis_v, fdis_s, fdis_vs) %>%
   gather(key="type", value="fdis")
 fdis_fig_dat$age_rank <- rep(1:6, each=2)
-fdis_fig_dat$elev <- env$elevation_m
 fdis_fig_dat$elev_rank <- rep(as.numeric(rank(env$elevation_m)), times=3)
 fdis_fig_dat <- data.frame(fdis_fig_dat)
 fdis_fig_dat$type <-  factor(fdis_fig_dat$type,
                              levels = c("fdis_v","fdis_s","fdis_vs"),
-                             labels = c("Vegetation","Seedbank","Veg+Seedbank"))
+                             labels = c("Vegetation","Seed bank","Veg+Seed bank"))
 
+#' Add in presence-absence results
 fdis_pa <- env %>% 
   select(fdis_v_pa, fdis_s_pa, fdis_vs_pa) %>%
   gather(key="type", value="fdis_pa") %>%
@@ -1601,8 +1609,8 @@ veg_sb_compare_fdis <- env %>%
 veg_sb_compare_fdis
 
 
-#'   *Fig.*: Scatterplot with functional dispersion (y) as a function of terrace elevation rank (x), with sites as 
-#'      points colored by seedbank (light), veg (med), seedbank+veg (dark)# 
+#'   *Figure*: Scatterplot with functional dispersion (y) as a function of age rank (x), with sites as 
+#'      points colored by seedbank (blue), veg (black), seedbank+veg (gray)
 
 
 # Figure by ELEVATION RANK
@@ -1610,7 +1618,7 @@ fdis_fig2 <- ggplot (aes(x=elev_rank, y=fdis, col=type), data=fdis_fig_dat) +
   geom_point() +
   geom_smooth(method="lm", se=F) +
   labs(x= "Elevation Rank", y="Functional Dispersion", col="Community type") + 
-  scale_color_manual(values=c("#636363","#9ECAE1","black")) 
+  scale_color_manual(values=c("black","dodgerblue3","gray68")) 
 fdis_fig2
 
 # Figure by ELEVATION RANK w/ PRES-ABS
@@ -1621,12 +1629,12 @@ fdis_fig2_pa <- ggplot (aes(x=elev_rank, y=fdis_pa, col=type), data=fdis_fig_dat
   geom_text(aes(x=3, y= .235 , label="type p=0.074")) + 
   geom_text(aes(x=3, y= .23, label="elev rank p=0.005")) + 
   geom_text(aes(x=3, y= .225, label="t*e NS")) + 
-  scale_color_manual(values=c("#636363","#9ECAE1","black")) 
+  scale_color_manual(values=c("black","dodgerblue3","gray68")) 
 fdis_fig2_pa
 
 
-tiff(filename="fdis_fig_elevrank.tiff", res=600, width=6, height = 4, units = "in")
-fdis_fig2
+tiff(filename="fdis_fig_elevrank_pa.tiff", res=600, width=6, height = 4, units = "in")
+fdis_fig2_pa
 dev.off()
 
 
@@ -1635,16 +1643,15 @@ dev.off()
 #' *Combined species richness and functional dispersion figure*
 #' 
 
+#' Combine species/functional dataframes 
 div_fig_dat <- cbind (fdis_fig_dat,rich_fig_dat$richness)
 colnames(div_fig_dat)[6] <- "richness"
-
 div_fig_dat <- div_fig_dat %>%
   gather("metric","value", richness, fdis)
 div_fig_dat$metric <- factor(div_fig_dat$metric, levels=c("richness","fdis"))
 
 
-### ELEVATION RANK FIG
-# Create text data.frames for annotating plot
+#' Create text data.frames for annotating plot
 div_text <- data.frame(label = c("A)", "B)"), metric = c("richness", "fdis"), elev=c(1,1), value=c(65, 0.2))
 stats_text1 <- data.frame(label = c("type p<0.001", "type p<0.001"), 
                           metric = c("richness", "fdis"), 
@@ -1662,7 +1669,7 @@ div_fig2 <- ggplot (aes(x=elev_rank, y=value, col=type), data=div_fig_dat) +
   geom_smooth(method="lm", se=F) +
   labs(x= "Terrace Elevation (rank)", col="Community type") + 
   scale_x_continuous(breaks= seq(from = 1, to = 12, by = 2)) +
-  scale_color_manual(values=c("#636363","#9ECAE1","black")) +
+  scale_color_manual(values=c("black","dodgerblue3","gray68")) +
   facet_wrap(. ~metric, ncol=1, scale="free", strip.position = "left", labeller = as_labeller(c(fdis = "Functional Dispersion", richness = "Species Richness"))) +
   ylab(NULL) +
   theme_bw() +
@@ -1675,31 +1682,33 @@ div_fig2
 
 
 
+tiff(filename="richness_fdis_fig_elev_rank.tiff", res=600, width=6, height = 7, units = "in")
+div_fig2
+dev.off()
+
 
 #' 
 #'  *Functional richness & Rao's Q figures for comparison*
 #'  
 
-
-#' *Functional richness*
+#' *Functional richness* dataframe preparation
 fric_fig_dat <- env %>%
   select(fric_v, fric_s, fric_vs) %>%
   gather(key="type", value="fric")
 fric_fig_dat$age_rank <- rep(1:6, each=2)
-fric_fig_dat$elev <- env$elevation_m
 fric_fig_dat$elev_rank <- rep(as.numeric(rank(env$elevation_m)),3)
 fric_fig_dat <- data.frame(fric_fig_dat)
 fric_fig_dat$type <-  factor(fric_fig_dat$type,
                              levels = c("fric_v","fric_s","fric_vs"),
-                             labels = c("Vegetation","Seedbank","Veg+Seedbank"))
+                             labels = c("Vegetation","Seed bank","Veg+Seed bank"))
 
 
-### Elevation Rank
+#' Functional richness figure
 fric_fig2 <- ggplot (aes(x=elev_rank, y=fric, col=type), data=fric_fig_dat) +
   geom_point() +
   geom_smooth(method="lm", se=F) +
   labs(x= "Terrace Elevation (rank)", y="Functional Richness", col="Community type") + 
-  scale_color_manual(values=c("#636363","#9ECAE1","black")) +
+  scale_color_manual(values=c("black","dodgerblue3","gray68")) +
   annotate("text", x = 0.5, y = 7, label = "B)", size=5, fontface =2) +
   annotate("text", x = 10, y = 7, label = "type p<0.001", size=3)+
   annotate("text", x = 10, y = 6.8, label = "elev rank p<0.001", size=3)+
@@ -1714,7 +1723,7 @@ dev.off()
 
 
 
-#' *Rao's Q*
+#' *Rao's Q* - dataframe prep
 raoq_fig_dat <- env %>%
   select(raoq_v, raoq_s, raoq_vs) %>%
   gather(key="type", value="raoq")
@@ -1724,15 +1733,14 @@ raoq_fig_dat$elev_rank <- rep(as.numeric(rank(env$elevation_m)),3)
 raoq_fig_dat <- data.frame(raoq_fig_dat)
 raoq_fig_dat$type <-  factor(raoq_fig_dat$type,
                              levels = c("raoq_v","raoq_s","raoq_vs"),
-                             labels = c("Vegetation","Seedbank","Veg+Seedbank"))
+                             labels = c("Vegetation","Seed bank","Veg+Seed bank"))
 
-
-#' Elevation Rank
+#' Rao's Q figure
 raoq_fig2 <- ggplot (aes(x=elev_rank, y=raoq, col=type), data=raoq_fig_dat) +
   geom_point() +
   geom_smooth(method="lm", se=F) +
   labs(x= NULL, y="Rao's Q", col="Community type") + 
-  scale_color_manual(values=c("#636363","#9ECAE1","black")) +
+  scale_color_manual(values=c("black","dodgerblue3","gray68")) +
   annotate("text", x = 0.5, y = 0.05, label = "A)", size=5, fontface =2) +
   annotate("text", x = 4, y = 0.05, label = "type p=0.001", size=3)+
   annotate("text", x = 4, y = 0.049, label = "elev rank NS",size=3)+
@@ -1741,14 +1749,13 @@ raoq_fig2 <- ggplot (aes(x=elev_rank, y=raoq, col=type), data=raoq_fig_dat) +
   theme(axis.text = element_text(size=7)) 
 raoq_fig2
 
-
 tiff(filename="raoq_fig_elev_rank.tiff", res=600, width=6, height = 4, units = "in")
 raoq_fig2
 dev.off()
 
 
 
-#' *Combined FRic & RaoQ*
+#' *Combined FRic & RaoQ figure*
 
 tiff(filename="fric_raoq_fig_elev_rank.tiff", res=600, width=6, height = 8, units = "in")
 grid.arrange(raoq_fig2,fric_fig2)
@@ -1757,24 +1764,26 @@ dev.off()
 
 
 #'  
-#'    *Functional diversity models*
+#'    *Analysis*  - Functional diversity models
 #'  
 
-fdis_fig_dat$type <- factor(fdis_fig_dat$type, levels = c("Veg+Seedbank", "Vegetation",  "Seedbank"))
+#' Set contrasts, prep dataframe
+options(contrasts = c("contr.sum", "contr.poly"))
+fdis_fig_dat$type <- factor(fdis_fig_dat$type, levels = c("Veg+Seed bank", "Vegetation",  "Seed bank"))
 
 
 #' *Functional dispersion:*  Run linear model for elevation rank
 fdis_lm2 <- lm(fdis ~ type * elev_rank, data=fdis_fig_dat)
 summary(fdis_lm2)
 Anova(fdis_lm2, type="III")
-Anova(fdis_lm2, type="II")
 
 #' *Functional dispersion:*  Run PRES-ABS linear model for elevation rank
 fdis_lm2_pa <- lm(fdis_pa ~ type * elev_rank, data=fdis_fig_dat)
 summary(fdis_lm2_pa)
 Anova(fdis_lm2_pa, type="III")
-Anova(fdis_lm2_pa, type="II")
 
+
+#' Show mean FDis and richness values by community type
 fdis_fig_dat %>%
   select(fdis,type) %>%
   group_by(type) %>%
@@ -1788,24 +1797,27 @@ rich_fig_dat %>%
 
 
 
-#' *Functional richness*
+#' *Functional richness* 
+#' 
+# Prep dataframe
 fric_fig_dat$site <- env$site
-
 options(contrasts = c("contr.sum", "contr.poly"))
-fric_fig_dat$type <- factor(fric_fig_dat$type, levels = c("Seedbank", "Veg+Seedbank", "Vegetation"))
+fric_fig_dat$type <- factor(fric_fig_dat$type, levels = c("Seed bank", "Veg+Seed bank", "Vegetation"))
 
 #' LM: Ranked elevation
 fric_lm_ranked <- lm(fric ~ type * elev_rank, data=fric_fig_dat)    
 summary(fric_lm_ranked) 
 Anova(fric_lm_ranked, type="III")
-Anova(fric_lm_ranked, type="II")
+
+
 
 
 #' *Rao's  Q*
-
+#' 
+#  Data prep
 raoq_fig_dat$site <- env$site
 options(contrasts = c("contr.sum", "contr.poly"))
-raoq_fig_dat$type <- factor(raoq_fig_dat$type, levels = c("Vegetation","Seedbank", "Veg+Seedbank"))
+raoq_fig_dat$type <- factor(raoq_fig_dat$type, levels = c("Vegetation","Seed bank", "Veg+Seed bank"))
 
 raoq_fig_dat %>%
   select(raoq,type) %>%
@@ -1816,18 +1828,19 @@ raoq_fig_dat %>%
 raoq_lm_ranked <- lm(raoq ~ type * elev_rank, data=raoq_fig_dat)    
 summary(raoq_lm_ranked) 
 Anova(raoq_lm_ranked, type="III")
-Anova(raoq_lm_ranked, type="II")
+
 
 
 
 
 
 #' 
-#' **Q3:  Functional trait composition (CWMs)**
+#' **Test:** Functional trait composition (CWMs)
 #' 
 #' Functional composition is assessed via trait community-weighted means (CWMs) and community-weighted variances
 #' for each site and community type (seedbank or veg) 
-
+#' 
+#' 
 
 
 
@@ -1838,12 +1851,12 @@ Anova(raoq_lm_ranked, type="II")
 #' Veg CWMS
 fc_v <- functcomp(trait_veg_s, veg_only_site_m)
 
-#' Compare CWMs to age rank
-cwm_v <- cbind(env$age_rank, fc_v)
+#' Compare CWMs to elevation rank
+cwm_v <- cbind(env$elev_rank, fc_v)
 cwm_v 
-colnames(cwm_v)[1] <- "age_rank"
-cwm_v$age_rank <- as.numeric(cwm_v$age_rank)
-cwm_v <- cwm_v[,c("height_per_day","RMR", "RDMC", "SRL", "Rdiam", "LDMC", "SLA","seed_mass","age_rank")]
+colnames(cwm_v)[1] <- "elev_rank"
+cwm_v$elev_rank <- as.numeric(cwm_v$elev_rank)
+cwm_v <- cwm_v[,c("height_per_day","RMR", "RDMC", "SRL", "Rdiam", "LDMC", "SLA","seed_mass","elev_rank")]
 corr.test(cwm_v)
 pairs(cwm_v)
 
@@ -1852,6 +1865,7 @@ cwm_veg_corr <- round(cor(cwm_v, use="pairwise.complete.obs"), 2)
 p_cwm_veg <- cor_pmat(cwm_v)
 cwm_veg_corr_sig <- ggcorrplot(cwm_veg_corr, title="Weighted CWM correlations in veg (p<0.1 shown)", type="lower", method="circle", p.mat=p_cwm_veg, sig.level=0.10, insig="blank", lab=T, lab_size = 2.5, tl.cex=10)
 cwm_veg_corr_sig
+
 
 #' 
 #' *Checking for dominant species influence*
@@ -1867,12 +1881,12 @@ veg_only_pa <- veg_only_site_m %>%
 veg_only_pa_m <- as.matrix(veg_only_pa)
 fc_pa_v <- functcomp(trait_veg_s, veg_only_pa_m)
 
-#' Compare CWMs to age rank, explore trends
-cwm_pa_v <- cbind(env$age_rank, fc_pa_v)
+#' Compare CWMs to elevation rank, explore trends
+cwm_pa_v <- cbind(env$elev_rank, fc_pa_v)
 cwm_pa_v
-colnames(cwm_pa_v)[1] <- "age_rank"
-cwm_pa_v$age_rank <- as.numeric(cwm_pa_v$age_rank)
-cwm_pa_v <- cwm_pa_v[,c("height_per_day","RMR", "RDMC", "SRL", "Rdiam", "LDMC", "SLA","seed_mass","age_rank")]
+colnames(cwm_pa_v)[1] <- "elev_rank"
+cwm_pa_v$elev_rank <- as.numeric(cwm_pa_v$elev_rank)
+cwm_pa_v <- cwm_pa_v[,c("height_per_day","RMR", "RDMC", "SRL", "Rdiam", "LDMC", "SLA","seed_mass","elev_rank")]
 corr.test(cwm_v)
 corr.test(cwm_pa_v)
 pairs(cwm_pa_v)
@@ -1882,6 +1896,7 @@ cwm_veg_pa_corr <- round(cor(cwm_pa_v, use="pairwise.complete.obs"), 2)
 p_cwm_veg_pa <- cor_pmat(cwm_pa_v)
 cwm_veg_pa_corr_sig <- ggcorrplot(cwm_veg_pa_corr, title="Pres/Abs CWM correlations in veg (p<0.1 shown)", type="lower", method="circle", p.mat=p_cwm_veg_pa, sig.level=0.10,insig="blank", lab=T, lab_size = 2.5, tl.cex=10)
 cwm_veg_pa_corr_sig
+
 
 #' 
 #' *Figure - Weighted vs Pres Absence*
@@ -1931,41 +1946,45 @@ dev.off()
 dom_spp <- veg_only_site %>%
   select(andger,chondrosum_spp,muhmon,poacom) %>%
   gather(key="species", value="abundance", andger:poacom)
-dom_spp$age_rank <- env$age_rank
+dom_spp$elev_rank <- rep(env$elev_rank,4)
 
+#' 
 #' Regression results: 
-#' andger NS (p=0.17), chondrosum NS (p=0.17), **muhmon p<0.001**, poacom NS (p=0.34)
+#' andger NS (p=0.09), chondrosum NS (p=0.38), **muhmon p=0.001**, poacom NS (p=0.42)
 #' 
 
 andger <-dom_spp %>%
   filter(species=="andger")
-summary(lm(abundance~age_rank, data=andger))
+summary(lm(abundance~elev_rank, data=andger))
 chondrosum <-dom_spp %>%
   filter(species=="chondrosum_spp")
-summary(lm(abundance~age_rank, data=chondrosum))
+summary(lm(abundance~elev_rank, data=chondrosum))
 muhmon <-dom_spp %>%
   filter(species=="muhmon")
-summary(lm(abundance~age_rank, data=muhmon))
+summary(lm(abundance~elev_rank, data=muhmon))
 poacom <-dom_spp %>%
   filter(species=="poacom")
-summary(lm(abundance~age_rank, data=poacom))
+summary(lm(abundance~elev_rank, data=poacom))
 
+
+#' 
 #' Figure for Dominant species
 #' 
 
-dom_text <- data.frame(label = c("p=0.17","p=0.17","p<0.001","p=0.34"), species=c("andger","chondrosum_spp","muhmon","poacom"), age_rank=c(2,2,2,2), abundance=c(0.2,0.2,0.2,0.2))
+dom_text <- data.frame(label = c("p=0.09","p=0.38","p=0.001","p=0.42"), species=c("andger","chondrosum_spp","muhmon","poacom"), elev_rank=c(4,4,4,4), abundance=c(0.2,0.2,0.2,0.2))
 
-dom_dist_v <- ggplot(data=dom_spp, aes(x=age_rank,y=abundance)) +
+dom_dist_v <- ggplot(data=dom_spp, aes(x=elev_rank,y=abundance)) +
   geom_point(cex=2, col="gray20", alpha=0.5)+
   geom_smooth(method="lm",se=F, col="gray80") +
-  labs(x="Soil Age Rank", y="Relative cover (%)") +
-  facet_wrap(~species, ncol=2)+
-  geom_text(data=dom_text, aes(x=age_rank, y=abundance, label=label), inherit.aes=FALSE)
+  labs(x="Elevation Rank", y="Relative cover (%)") +
+  facet_wrap(~species, ncol=2) +
+  geom_text(data=dom_text, aes(x=elev_rank, y=abundance, label=label), inherit.aes=FALSE)
 dom_dist_v
 
 tiff(filename="dom_dist_veg.tiff", res=300, width=6, height = 5, units = "in")
 dom_dist_v
 dev.off()
+
 
 #' 
 #' In the weighted abundance CWMs, several weird trait correlations appeared. If they were 
@@ -2008,9 +2027,6 @@ ggplot() +
 
 
 
-
-
-
 #' 
 #' 
 #' *Calculate Seedbank CWMs*
@@ -2022,11 +2038,11 @@ ggplot() +
 fc_s <- functcomp(trait_sb_s, sb_only_site_m)
 
 #' Compare CWMs to age rank
-cwm_s <- cbind(env$age_rank, fc_s)
+cwm_s <- cbind(env$elev_rank, fc_s)
 cwm_s
-colnames(cwm_s)[1] <- "age_rank"
-cwm_s$age_rank <- as.numeric(cwm_s$age_rank)
-cwm_s <- cwm_s[,c("height_per_day","RMR", "RDMC", "SRL", "Rdiam", "LDMC", "SLA","seed_mass","age_rank")]
+colnames(cwm_s)[1] <- "elev_rank"
+cwm_s$age_rank <- as.numeric(cwm_s$elev_rank)
+cwm_s <- cwm_s[,c("height_per_day","RMR", "RDMC", "SRL", "Rdiam", "LDMC", "SLA","seed_mass","elev_rank")]
 corr.test(cwm_s)
 pairs(cwm_s)
 
@@ -2051,11 +2067,11 @@ sb_only_pa_m <- as.matrix(sb_only_pa)
 fc_pa_s <- functcomp(trait_sb_s, sb_only_pa_m)
 
 #' Compare CWMs to age rank, explore trends
-cwm_pa_s <- cbind(env$age_rank, fc_pa_s)
+cwm_pa_s <- cbind(env$elev_rank, fc_pa_s)
 cwm_pa_s
-colnames(cwm_pa_s)[1] <- "age_rank"
-cwm_pa_s$age_rank <- as.numeric(cwm_pa_s$age_rank)
-cwm_pa_s <- cwm_pa_s[,c("height_per_day","RMR", "RDMC", "SRL", "Rdiam", "LDMC", "SLA","seed_mass","age_rank")]
+colnames(cwm_pa_s)[1] <- "elev_rank"
+cwm_pa_s$elev_rank <- as.numeric(cwm_pa_s$elev_rank)
+cwm_pa_s <- cwm_pa_s[,c("height_per_day","RMR", "RDMC", "SRL", "Rdiam", "LDMC", "SLA","seed_mass","elev_rank")]
 corr.test(cwm_pa_s)
 pairs(cwm_pa_s)
 
@@ -2102,6 +2118,7 @@ cwms
 write.csv(cwms,'site_cwms_11Sep20.csv')
 
 
+
 #' 
 #' 
 #'  *Read in CWMs if skipping ahead*
@@ -2114,25 +2131,25 @@ cwms$elev <- env$elevation_m
 cwms$elev_rank <- rep(as.numeric(rank(env$elevation_m)),4)
 str(cwms)
 
-#'
-#' *Figure - CWM differences between seedbank with Weighted vs Pres Abs data*
-#'
 
+#'
+#' *Figure - BARPLOT: CWM differences between vegetation and seedbank*
+#'                     with Weighted vs Pres Abs data
+#'
 
 #' Create dataframe with means and standard errors
 cwm_bar_fig_dat_mean <- cwms %>%
-  select(-age_rank) %>%
+  select(-elev_rank) %>%
   group_by(type,abund) %>%
   summarise_all(mean) %>%
   gather(key="trait", value="cwm",height_per_day:seed_mass)
 cwm_bar_fig_dat_se <- cwms %>%
-  select(-age_rank) %>%
+  select(-elev_rank) %>%
   group_by(type,abund) %>%
   summarise_all(se) %>%
   gather(key="trait", value="se",height_per_day:seed_mass)
 
-cwm_bar_fig_dat <- bind_cols(cwm_bar_fig_dat_mean, cwm_bar_fig_dat_se) %>%
-  select(-trait1, -abund1, -type1)
+cwm_bar_fig_dat <- left_join(cwm_bar_fig_dat_mean, cwm_bar_fig_dat_se, by=c("type","abund","trait"))
 cwm_bar_fig_dat$trait <- plyr::revalue(cwm_bar_fig_dat$trait , c("height_per_day"="Height d-1", "seed_mass"="Seedmass"))
 cwm_bar_fig_dat$trait <- factor(cwm_bar_fig_dat$trait, levels=c("Seedmass","Rdiam","SRL","RMR","LDMC","RDMC","SLA","Height d-1"))
 
@@ -2153,12 +2170,15 @@ tiff(filename="CWM_barplot.tiff", res=300, width=10, height = 6, units = "in")
 cwm_barplot
 dev.off()
 
+
+
 #' 
-#' Figure for abundance only
+#' *Figure for abundance-weighted only*
 #' 
 
 cwm_bar_fig_abund <- cwm_bar_fig_dat %>%
   filter(abund == "Abundance")
+cwm_bar_fig_abund
 
 cwm_barplot_abund <- ggplot(data=cwm_bar_fig_abund) + 
   geom_bar(aes(x=type, y=cwm, fill=type), stat="identity", position=position_dodge()) +
@@ -2168,7 +2188,7 @@ cwm_barplot_abund <- ggplot(data=cwm_bar_fig_abund) +
   theme(axis.text.x = element_text(face="bold", angle=90))+
   facet_wrap(~trait,nrow=1) + 
   theme(axis.text.x = element_blank(), axis.ticks.x= element_blank()) +
-  annotate("segment", x=-Inf, xend=-Inf, y=-Inf, yend=Inf, col="gray80")
+  annotate("segment", x=-Inf, xend=-Inf, y=-Inf, yend=Inf, col="gray80") 
 cwm_barplot_abund
 
 tiff(filename="CWM_barplot_abund.tiff", res=300, width=10, height =4, units = "in")
@@ -2179,16 +2199,17 @@ dev.off()
 
 
 #' 
-#' *CWM Linear models*
+#' *CWM  models*
 #' 
 
-#' *Abundance weighted*
+#' Based on *Abundance weighted* data
+ 
+# Prepare dataframe
 cwms_abund <- cwms %>% 
   filter(abund == "Abundance")
 cwms_abund$site <- env$site
-
 head(cwms_abund)
-
+  
 
 #' Elevation Rank - LMs
 options(contrasts = c("contr.sum", "contr.poly"))
@@ -2213,32 +2234,19 @@ Anova(LDMC_lm_rank, type="III")
 Anova(SLA_lm_rank, type="III")
 Anova(seedmass_lm_rank, type="III")
 
-Anova(height_lm_rank, type="II")
-Anova(RMR_lm_rank, type="II")
-Anova(RDMC_lm_rank, type="II")
-Anova(SRL_lm_rank, type="II")
-Anova(Rdiam_lm_rank, type="II")
-Anova(LDMC_lm_rank, type="II")
-Anova(SLA_lm_rank, type="II")
-Anova(seedmass_lm_rank, type="II")
 
 
+#' Based on *Presence-Absence* data
 
-
-#' *Presence-Absence*
+# Prepare dataframe
 cwms_pa <- cwms %>% 
   filter(abund == "Pres-Abs")
 cwms_pa$site <- env$site
-
 head(cwms_pa)
 
 
-#' 
 #' Elevation Rank - LMs
-#' 
-
 options(contrasts = c("contr.sum", "contr.poly"))
-#options(contrasts = c("contr.treatment", "contr.poly"))
 
 height_lm_rank_pa  <- lm(height_per_day ~ type * elev_rank, data=cwms_pa )    
 RMR_lm_rank_pa  <- lm(RMR ~ type * elev_rank , data=cwms_pa )    
@@ -2259,26 +2267,105 @@ Anova(SLA_lm_rank_pa , type="III")
 Anova(seedmass_lm_rank_pa , type="III")
 
 
+#'
+#'
+#' **Fourth-Corner Tests** to supplement linear models
+#' 
+#' Conducted separately for seed bank and vegetation communities (can't handle interaction term)
+#'  
+#'  
+
+
+#' 
+#' Create/check dataframes for analysis
+#' 
+
+# Species matrices: 88 species x 12 sites, separated by vegetation and seed bank communities
+#   Note that we start with 90 species, but need to remove two without any trait data available (ascste, cactus_spp)
+str(site_veg_sb_rel2)
+seed_bank_comm <- site_veg_sb_rel2 %>%
+  filter(type == "sb") %>%
+  select(-type, -ascste, -cactus)
+veg_comm <- site_veg_sb_rel2 %>%
+  filter(type == "veg") %>%
+  select(-type, -ascste, -cactus)
+str(seed_bank_comm)
+str(veg_comm)
+
+# Generate presence-absence dataframes
+seed_bank_comm_pa <- seed_bank_comm %>% 
+  replace(((.)>0),1)
+veg_comm_pa <- veg_comm %>% 
+  replace(((.)>0),1)
+
+# Environment matrix:  1 variable (elev. rank) x 12 sites
+env_var <- env %>% select(elev_rank)
+str(env_var)
+
+
+# Trait matirx: 8 traits (all transformation/scaling complete) x 88 species
+#   Note that there are several missing trait observations that must be imputed before analysis
+str(trait_veg_sb_s)
+#  Need to impute missing trait values with PCA approach
+#  Use leave-one-out (loo) method to determine how many components to use for lowest mean square root error
+nb <- estim_ncpPCA(trait_veg_sb_s, ncp.min=0, ncp.max=8, method.cv="loo")  
+nb #Use 7 components
+trait_complete <- imputePCA(trait_veg_sb_s,ncp=7,scale=FALSE, method="Regularized")
+trait_matrix <- data.frame(trait_complete$completeObs)
 
 
 
 #' 
-#' **Figures:  CWM & CWV~ Age rank (seedbank and veg shown)**
+#' Fourth-corner analysis
 #' 
+
+# Use method=6, which combines permutation of sites and permutation of species to obtain tests with correct type 1 errors
+# no adjustment for multiple comparisons, consistent with linear models approach
+
+
+# Abundance data
+nrepet <- 49999  #Set number of reps
+four.comb.veg <- fourthcorner(env_var, veg_comm,
+                                trait_matrix, modeltype = 6, p.adjust.method.G = "none",
+                                p.adjust.method.D = "none", nrepet = nrepet)
+
+four.comb.sb <- fourthcorner(env_var, seed_bank_comm,
+                              trait_matrix, modeltype = 6, p.adjust.method.G = "none",
+                              p.adjust.method.D = "none", nrepet = nrepet)
+summary(four.comb.veg)
+summary(four.comb.sb)
+
+# Presence-Absence data
+nrepet <- 49999  #Set number of reps
+four.comb.veg_pa <- fourthcorner(env_var, veg_comm_pa,
+                              trait_matrix, modeltype = 6, p.adjust.method.G = "none",
+                              p.adjust.method.D = "none", nrepet = nrepet)
+
+four.comb.sb_pa <- fourthcorner(env_var, seed_bank_comm_pa,
+                             trait_matrix, modeltype = 6, p.adjust.method.G = "none",
+                             p.adjust.method.D = "none", nrepet = nrepet)
+summary(four.comb.veg_pa)
+summary(four.comb.sb_pa)
+
+
+
+
+#' 
+#' **Figures:  CWM ~ Elevation rank * Type (seed bank and veg)**
+#' 
+
+
 #' ** Abundance Weighted**
-#' 
-#' 
-#' 
 
-#'  
-#'  *Separate CWM figures*
-#'  
-
+#' Dataframe preparation
+cwm_abun_fig_dat <- cwms_abund %>%
+  select(-site) %>%
+  gather(key="trait", value="cwm", height_per_day:seed_mass)
+cwm_abun_fig_dat$trait <- plyr::revalue(cwm_abun_fig_dat$trait, c("height_per_day"="Height d-1", "seed_mass"="Seedmass"))
 
 
 #' *Height*
-
-# Height - Elevation Rank (minor sig, type p=0.058)
+#' 
 Anova(height_lm_rank, type="III")
 summary(height_lm_rank)
 
@@ -2299,9 +2386,9 @@ height_cwm2 <-
 height_cwm2
 
 
-#' *RMR*
 
-# Elevation Rank - RMR (type p=0.040, elev rank NS, t*e NS)
+#' *RMR*
+#' 
 Anova(RMR_lm_rank, type="III")
 
 rmr_cwm2 <- 
@@ -2323,8 +2410,7 @@ rmr_cwm2
 
 
 #' *RDMC*
-
-# Elev Rank - RDMC (type NS, elev rank NS, t*e NS)
+#' 
 Anova(RDMC_lm_rank, type="III")
 
 rdmc_cwm2 <- 
@@ -2345,10 +2431,8 @@ rdmc_cwm2
 
 
 
-
 #' *SRL*
-
-#' Elev Rank - SRL (type p<0.001, elev_rank NS, t*e NS)
+#' 
 Anova(SRL_lm_rank, type="III")
 
 srl_cwm2 <- 
@@ -2368,9 +2452,9 @@ srl_cwm2 <-
 srl_cwm2
 
 
-#' *Rdiam*
 
-# Elev Rank - Rdiam (type p =0.016, soil age p=0.81, t*s NS)
+#' *Rdiam*
+#' 
 Anova(Rdiam_lm_rank, type="III")
 
 rdiam_cwm2 <- ggplot(data=subset(cwm_abun_fig_dat,trait=="Rdiam")) +
@@ -2390,10 +2474,8 @@ rdiam_cwm2
 
 
 #' *LDMC*
-
-# Elev Rank - LDMC (type p=0.079, soil age p=.065, t*s p=0.069))
+#' 
 Anova(LDMC_lm_rank, type="III")
-Anova(LDMC_lm_rank)
 
 ldmc_cwm2 <- ggplot(data=subset(cwm_abun_fig_dat,trait=="LDMC")) +
   geom_point(aes(x=elev_rank, y=cwm, col=type)) + 
@@ -2411,12 +2493,11 @@ ldmc_cwm2 <- ggplot(data=subset(cwm_abun_fig_dat,trait=="LDMC")) +
 ldmc_cwm2
 
 
-#' *SLA*
 
-#  Elev Rank - SLA (type p=.049, elev rank p=.045, t*e p=0.026)
+#' *SLA*
+#' 
 Anova(SLA_lm_rank, type="III")
 summary(SLA_lm_rank)
-Anova(SLA_lm_rank)
 
 sla_cwm2 <- 
   ggplot(data=subset(cwm_abun_fig_dat,trait=="SLA")) +
@@ -2437,10 +2518,8 @@ sla_cwm2
 
 
 #' *Seedmass*
-
-# Elev Rank - Seedmass (type p<0.001, elev rank p=0.03, t*e NS)
+#' 
 Anova(seedmass_lm_rank, type="III")
-Anova(seedmass_lm_rank)
 summary(seedmass_lm_rank)
 
 seedmass_cwm2 <- 
@@ -2460,10 +2539,10 @@ seedmass_cwm2 <-
 seedmass_cwm2
 
 
-
 #' *Save plot grids*
 elev_rank_cwm <- plot_grid(rdmc_cwm2, height_cwm2, rmr_cwm2, srl_cwm2, rdiam_cwm2, seedmass_cwm2, ldmc_cwm2, sla_cwm2, ncol=1, rel_heights = c(1,1,1,1,1,1,1,1.37))
 elev_rank_cwm
+
 
 tiff(filename="CWM_elev_rank_III.tiff", res=600, width=7, height = 14, units = "in")
 elev_rank_cwm
@@ -2472,21 +2551,19 @@ dev.off()
 
 
 #'
-#' *CWM figures for pres-abs*
+#' *CWM figures for Presence-Absence data*
 #' 
 
+#' Data preparation
 cwm_pres_fig_dat <- cwms_pa %>%
   select(-site) %>%
   gather(key="trait", value="cwm", height_per_day:seed_mass)
-
-# Recode traits
 cwm_pres_fig_dat$trait <- plyr::revalue(cwm_pres_fig_dat$trait, c("height_per_day"="Height d-1", "seed_mass"="Seedmass"))
 str(cwm_pres_fig_dat)
 
 
 #' *Height*
-
-# Height - Elevation Rank (all NS)
+#' 
 Anova(height_lm_rank_pa, type="III")
 height_cwm_pa2 <- 
   ggplot(data=subset(cwm_pres_fig_dat,trait=="Height d-1")) +
@@ -2507,8 +2584,7 @@ height_cwm_pa2
 
 
 #' *RMR*
-
-# Elevation Rank - RMR (type NS, elev rank p=0.03, t*e NS)
+#' 
 Anova(RMR_lm_rank_pa, type="III")
 rmr_cwm_pa2 <- 
   ggplot(data=subset(cwm_pres_fig_dat,trait=="RMR")) +
@@ -2528,8 +2604,7 @@ rmr_cwm_pa2
 
 
 #' *RDMC*
-
-# Elev Rank - RDMC (type NS, elev rank NS, t*e NS)
+#' 
 Anova(RDMC_lm_rank_pa, type="III")
 rdmc_cwm_pa2 <- 
   ggplot(data=subset(cwm_pres_fig_dat,trait=="RDMC")) +
@@ -2548,11 +2623,8 @@ rdmc_cwm_pa2 <-
 rdmc_cwm_pa2
 
 
-
 #' *SRL*
-
-
-#' Elev Rank - SRL (type NS, elev_rank p<0.001, t*e p<0.001)
+#' 
 Anova(SRL_lm_rank_pa, type="III")
 srl_cwm_pa2 <- 
   ggplot(data=subset(cwm_pres_fig_dat,trait=="SRL")) +
@@ -2571,11 +2643,8 @@ srl_cwm_pa2 <-
 srl_cwm_pa2
 
 
-
-
 #' *Rdiam*
-
-# Elev Rank - Rdiam (type p NS, soil age p<0.001, t*s p=0.071)
+#' 
 Anova(Rdiam_lm_rank_pa, type="III")
 
 rdiam_cwm_pa2 <- ggplot(data=subset(cwm_pres_fig_dat,trait=="Rdiam")) +
@@ -2594,10 +2663,8 @@ rdiam_cwm_pa2 <- ggplot(data=subset(cwm_pres_fig_dat,trait=="Rdiam")) +
 rdiam_cwm_pa2
 
 
-
 #' *LDMC*
-
-# Elev Rank - LDMC (type NS, elev rank NS, t*e p=0.008))
+#' 
 Anova(LDMC_lm_rank_pa, type="III")
 ldmc_cwm_pa2 <- ggplot(data=subset(cwm_pres_fig_dat,trait=="LDMC")) +
   geom_point(aes(x=elev_rank, y=cwm, col=type)) + 
@@ -2615,11 +2682,8 @@ ldmc_cwm_pa2 <- ggplot(data=subset(cwm_pres_fig_dat,trait=="LDMC")) +
 ldmc_cwm_pa2
 
 
-
-
 #' *SLA*
-
-#  Elev Rank - SLA (type NS, elev rank NS, t*e NS)
+#' 
 Anova(SLA_lm_rank_pa, type="III")
 sla_cwm_pa2 <- 
   ggplot(data=subset(cwm_pres_fig_dat,trait=="SLA")) +
@@ -2638,10 +2702,8 @@ sla_cwm_pa2 <-
 sla_cwm_pa2
 
 
-
 #' *Seedmass*
-
-# Elev Rank - Seedmass (type p<0.001, elev rank NS, t*e NS)
+#' 
 Anova(seedmass_lm_rank_pa, type="III")
 seedmass_cwm_pa2 <- 
   ggplot(data=subset(cwm_pres_fig_dat,trait=="Seedmass")) +
@@ -2660,13 +2722,516 @@ seedmass_cwm_pa2 <-
 seedmass_cwm_pa2
 
 
-
 #' *Save plot grids*
 elev_rank_cwm_pa <- plot_grid(rdmc_cwm_pa2, height_cwm_pa2,rmr_cwm_pa2, srl_cwm_pa2, rdiam_cwm_pa2, seedmass_cwm_pa2, ldmc_cwm_pa2, sla_cwm_pa2, ncol=1, rel_heights = c(1,1,1,1,1,1,1,1.37))
 elev_rank_cwm_pa
 
-
 tiff(filename="CWM_elev_rank_pa_III.tiff", res=600, width=7, height = 14, units = "in")
 elev_rank_cwm_pa
+dev.off()
+
+
+
+
+#'  
+#'  **Supporting Information:** 
+#'  A) Species-Accumulation Curves (site-level) for seedbanks and vegetation
+#'  B) Summary of impact: removing exceptionally rare species (found in <5% of samples)
+#'  C) Summary of impact: averaging seed bank and vegetation data over years
+#'  D) Annuals VS Perennials in the vegetation and seed bank
+#' 
+
+
+#'  
+#'  A)  **Species-Accumulation Curves (site-level) for seedbanks and vegetation**
+#'  
+
+#' Check structure of the raw dataset
+str(veg_sb)
+
+#' 
+#'  *Vegetation*
+#'  
+#' Filter to vegetation composition for each site (A through L)
+veg_a <- veg_sb %>% 
+  filter(type == "veg") %>%
+  filter(site == "A") %>%
+  select(-type, -site, -age_rank)
+veg_b <- veg_sb %>% 
+  filter(type == "veg") %>%
+  filter(site == "B") %>%
+  select(-type, -site, -age_rank)
+veg_c <- veg_sb %>% 
+  filter(type == "veg") %>%
+  filter(site == "C") %>%
+  select(-type, -site, -age_rank)
+veg_d <- veg_sb %>% 
+  filter(type == "veg") %>%
+  filter(site == "D") %>%
+  select(-type, -site, -age_rank)
+veg_e <- veg_sb %>% 
+  filter(type == "veg") %>%
+  filter(site == "E") %>%
+  select(-type, -site, -age_rank)
+veg_f <- veg_sb %>% 
+  filter(type == "veg") %>%
+  filter(site == "F") %>%
+  select(-type, -site, -age_rank)
+veg_g <- veg_sb %>% 
+  filter(type == "veg") %>%
+  filter(site == "G") %>%
+  select(-type, -site, -age_rank)
+veg_h <- veg_sb %>% 
+  filter(type == "veg") %>%
+  filter(site == "H") %>%
+  select(-type, -site, -age_rank)
+veg_i <- veg_sb %>% 
+  filter(type == "veg") %>%
+  filter(site == "I") %>%
+  select(-type, -site, -age_rank)
+veg_j <- veg_sb %>% 
+  filter(type == "veg") %>%
+  filter(site == "J") %>%
+  select(-type, -site, -age_rank)
+veg_k <- veg_sb %>% 
+  filter(type == "veg") %>%
+  filter(site == "K") %>%
+  select(-type, -site, -age_rank)
+veg_l <- veg_sb %>% 
+  filter(type == "veg") %>%
+  filter(site == "L") %>%
+  select(-type, -site, -age_rank)
+
+
+#' Create species accumulation curves for each site
+veg_a_curve <- specaccum(veg_a, method="random", permutations=100)
+veg_b_curve <- specaccum(veg_b, method="random", permutations=100)
+veg_c_curve <- specaccum(veg_c, method="random", permutations=100)
+veg_d_curve <- specaccum(veg_d, method="random", permutations=100)
+veg_e_curve <- specaccum(veg_e, method="random", permutations=100)
+veg_f_curve <- specaccum(veg_f, method="random", permutations=100)
+veg_g_curve <- specaccum(veg_g, method="random", permutations=100)
+veg_h_curve <- specaccum(veg_h, method="random", permutations=100)
+veg_i_curve <- specaccum(veg_i, method="random", permutations=100)
+veg_j_curve <- specaccum(veg_j, method="random", permutations=100)
+veg_k_curve <- specaccum(veg_k, method="random", permutations=100)
+veg_l_curve <- specaccum(veg_l, method="random", permutations=100)
+
+
+#' 
+#' Plot one figure with curves for each site
+#'    (shade gets darker at higher elevation ranks)
+#'    
+plot(veg_c_curve, col="gray70", xlab="Number of Plots",
+     ylab="Species Richness",
+     main="Vegetation - Species Accumulation Curves")
+plot(veg_a_curve, add=TRUE, col="gray85")
+plot(veg_b_curve, add=TRUE, col="gray85")
+plot(veg_d_curve, add=TRUE, col="gray70")
+plot(veg_e_curve, add=TRUE, col="gray60")
+plot(veg_f_curve, add=TRUE, col="gray60")
+plot(veg_g_curve, add=TRUE, col="gray50")
+plot(veg_h_curve, add=TRUE, col="gray50")
+plot(veg_i_curve, add=TRUE, col="gray40")
+plot(veg_j_curve, add=TRUE, col="gray30")
+plot(veg_k_curve, add=TRUE, col="gray40")
+plot(veg_l_curve, add=TRUE, col="gray30")
+
+
+
+
+
+#' 
+#'  *Seedbank*
+#'  
+#' Filter to seed bank composition for each site (A through L)
+sb_a <- veg_sb %>% 
+  filter(type == "sb") %>%
+  filter(site == "A") %>%
+  select(-type, -site, -age_rank)
+sb_b <- veg_sb %>% 
+  filter(type == "sb") %>%
+  filter(site == "B") %>%
+  select(-type, -site, -age_rank)
+sb_c <- veg_sb %>% 
+  filter(type == "sb") %>%
+  filter(site == "C") %>%
+  select(-type, -site, -age_rank)
+sb_d <- veg_sb %>% 
+  filter(type == "sb") %>%
+  filter(site == "D") %>%
+  select(-type, -site, -age_rank)
+sb_e <- veg_sb %>% 
+  filter(type == "sb") %>%
+  filter(site == "E") %>%
+  select(-type, -site, -age_rank)
+sb_f <- veg_sb %>% 
+  filter(type == "sb") %>%
+  filter(site == "F") %>%
+  select(-type, -site, -age_rank)
+sb_g <- veg_sb %>% 
+  filter(type == "sb") %>%
+  filter(site == "G") %>%
+  select(-type, -site, -age_rank)
+sb_h <- veg_sb %>% 
+  filter(type == "sb") %>%
+  filter(site == "H") %>%
+  select(-type, -site, -age_rank)
+sb_i <- veg_sb %>% 
+  filter(type == "sb") %>%
+  filter(site == "I") %>%
+  select(-type, -site, -age_rank)
+sb_j <- veg_sb %>% 
+  filter(type == "sb") %>%
+  filter(site == "J") %>%
+  select(-type, -site, -age_rank)
+sb_k <- veg_sb %>% 
+  filter(type == "sb") %>%
+  filter(site == "K") %>%
+  select(-type, -site, -age_rank)
+sb_l <- veg_sb %>% 
+  filter(type == "sb") %>%
+  filter(site == "L") %>%
+  select(-type, -site, -age_rank)
+
+
+#' Create species accumulation curves for each site
+sb_a_curve <- specaccum(sb_a, method="random", permutations=100)
+sb_b_curve <- specaccum(sb_b, method="random", permutations=100)
+sb_c_curve <- specaccum(sb_c, method="random", permutations=100)
+sb_d_curve <- specaccum(sb_d, method="random", permutations=100)
+sb_e_curve <- specaccum(sb_e, method="random", permutations=100)
+sb_f_curve <- specaccum(sb_f, method="random", permutations=100)
+sb_g_curve <- specaccum(sb_g, method="random", permutations=100)
+sb_h_curve <- specaccum(sb_h, method="random", permutations=100)
+sb_i_curve <- specaccum(sb_i, method="random", permutations=100)
+sb_j_curve <- specaccum(sb_j, method="random", permutations=100)
+sb_k_curve <- specaccum(sb_k, method="random", permutations=100)
+sb_l_curve <- specaccum(sb_l, method="random", permutations=100)
+
+
+#' 
+#' Plot one figure with curves for each site
+#'    (shade gets darker at higher elevation ranks)
+#'    
+plot(sb_h_curve, col="gray50", xlab="Number of Plots",
+     ylab="Species Richness",
+     main="Seed bank - Species Accumulation Curves")
+plot(sb_a_curve, add=TRUE, col="gray85")
+plot(sb_b_curve, add=TRUE, col="gray85")
+plot(sb_d_curve, add=TRUE, col="gray70")
+plot(sb_e_curve, add=TRUE, col="gray60")
+plot(sb_f_curve, add=TRUE, col="gray60")
+plot(sb_g_curve, add=TRUE, col="gray50")
+plot(sb_c_curve, add=TRUE, col="gray70")
+plot(sb_i_curve, add=TRUE, col="gray40")
+plot(sb_j_curve, add=TRUE, col="gray30")
+plot(sb_k_curve, add=TRUE, col="gray40")
+plot(sb_l_curve, add=TRUE, col="gray30")
+
+
+
+
+
+
+#'  
+#'  B)  *Summary of impact: removing exceptionally rare species (found in <5% of samples)*
+#'  
+
+#' View full raw dataset (no infrequent species removed, no averaging across years)
+str(seedbank_veg_full)
+
+#' 
+#'  *Vegetation*
+#'  
+
+#' Filter to vegetation, estimate average site-level abundances across years
+veg_avg_all <- seedbank_veg_full %>%
+  filter(type=="veg") %>%
+  select(-type, -year, -plot) %>% 
+  group_by(site) %>%
+  summarise_all(mean) %>%
+  ungroup()
+
+#' Reduce site cover to presence/absence
+veg_pa_all <- veg_avg_all %>%
+  mutate_if(is.numeric, ~1 * (. > 0))
+
+#' Sum across columns to generate a total number of species (total richness) per site 
+veg_pa_all %>%
+  ungroup() %>%
+  select(-site) %>% 
+  rowSums(na.rm=TRUE) ->
+  env$veg_total_rich
+
+#' Read out total richness (no infrequent species removed) compare to utilized richness (infrequent removed)
+env$veg_total_rich
+env$veg_rich
+
+#'Figure to show how vegetative richness iss reduced across sites by removing infrequent species
+veg_rich_compare <- ggplot() +
+  geom_point(aes(x=veg_total_rich, y=veg_rich, color=elev_rank), cex=2, data=env) +
+  labs( x="Total richness \n (all species retained)", y="Adjusted richness \n (infrequent species removed)", color="Elevation Rank") +
+  scale_colour_continuous(trans="reverse") +
+  xlim(20,60) +
+  ylim(20,60) +
+  geom_abline(slope=1, intercept=0)
+veg_rich_compare
+
+#' Save figure
+tiff(filename="veg_richness_with_infrequent_species.tiff", res=600, width=6, height = 4, units = "in")
+veg_rich_compare
+dev.off()
+
+
+
+#' 
+#'  *Seedbank*
+#'  
+
+#' Filter to vegetation, estimate average site-level abundances across years
+seed_avg_all <- seedbank_veg_full %>%
+  filter(type=="sb") %>%
+  select(-type, -year, -plot) %>% 
+  group_by(site) %>%
+  summarise_all(mean) %>%
+  ungroup()
+
+#' Reduce site cover to presence/absence
+seed_pa_all <- seed_avg_all %>%
+  mutate_if(is.numeric, ~1 * (. > 0))
+
+#' Sum across columns to generate a total number of species (total richness) per site 
+seed_pa_all %>%
+  ungroup() %>%
+  select(-site) %>% 
+  rowSums(na.rm=TRUE) ->
+  env$sb_total_rich
+
+#' Read out total richness (no infrequent species removed) compare to utilized richness (infrequent removed)
+env$sb_total_rich
+env$sb_rich
+
+env$veg_rich - env$sb_rich
+
+#'Figure to show how vegetative richness iss reduced across sites by removing infrequent species
+sb_rich_compare <- ggplot() +
+  geom_point(aes(x=sb_total_rich, y=sb_rich, color=elev_rank), cex=2, data=env) +
+  labs( x="Total richness \n (all species retained)", y="Adjusted richness \n (infrequent species removed)", color="Elevation Rank") +
+  scale_colour_continuous(trans="reverse") +
+  xlim(10,50) +
+  ylim(10,50) +
+  geom_abline(slope=1, intercept=0)
+sb_rich_compare
+
+#' Save figure
+tiff(filename="sb_richness_with_infrequent_species.tiff", res=600, width=6, height = 4, units = "in")
+sb_rich_compare
+dev.off()
+
+
+
+
+#'  
+#'  C) *Summary of impact: averaging seed bank and vegetation data over years*
+#' 
+
+
+#' Prepare dataframe
+
+str(seedbank_veg_full)
+str(veg_sb)
+
+#' Reduce to 90 common species in analysis
+species_list <- veg_sb %>%
+  select(-type, -site, -age_rank)
+species_list <- colnames(species_list)
+seedbank_veg_full_com <- seedbank_veg_full[ , names(seedbank_veg_full) %in% species_list]
+
+seedbank_veg_full_com$type <- seedbank_veg_full$type
+seedbank_veg_full_com$plot <- seedbank_veg_full$plot
+seedbank_veg_full_com$site <- seedbank_veg_full$site
+seedbank_veg_full_com$year <- seedbank_veg_full$year
+
+str(seedbank_veg_full_com)
+
+
+
+
+#'  *Seed bank*
+#'
+#'
+#'  Plot-level seed bank data by year
+#'  
+seedbank_by_year <- seedbank_veg_full_com %>%
+  filter(type=="sb") %>%
+  select(-type, -site, - plot)
+
+seedbank_by_year_dat <- seedbank_by_year %>% select(-year)
+seedbank_by_year_yr <- seedbank_by_year %>% select(year)
+seedbank_by_year_dat_sqrt <- sqrt(seedbank_by_year_dat)
+seedbank_by_year_rel <- decostand(seedbank_by_year_dat_sqrt, "total")
+
+# Run plot-level PerMANOVA by year
+spp_perm_plot_sb <-adonis(seedbank_by_year_rel ~ year, data=seedbank_by_year_yr , permutations = 999, method="bray")
+spp_perm_plot_sb
+
+
+#'  Site-level seed bank data by year
+#'  
+seedbank_by_year_site <- seedbank_veg_full_com %>%
+  filter(type=="sb") %>%
+  select(-type, - plot) %>%
+  group_by(site, year) %>%
+  summarise_all(mean) %>%
+  ungroup()
+
+seedbank_by_year_site_dat <- seedbank_by_year_site %>% select(-year, -site)
+seedbank_by_year_site_yr <- seedbank_by_year_site %>% select(year)
+seedbank_by_year_site_dat_sqrt <- sqrt(seedbank_by_year_site_dat)
+seedbank_by_year_site_rel <- decostand(seedbank_by_year_site_dat_sqrt, "total")
+
+#' Run plot-level PerMANOVA by year
+spp_perm_site_sb <-adonis(seedbank_by_year_site_rel ~ year, data=seedbank_by_year_site_yr , permutations = 999, method="bray")
+spp_perm_site_sb
+
+
+
+#'  *Vegetation*
+#'
+#'
+#'  Plot-level vegetation data by year
+#'  
+veg_by_year <- seedbank_veg_full_com %>%
+  filter(type=="veg") %>%
+  select(-type, -site, - plot)
+
+veg_by_year_dat <- veg_by_year %>% select(-year)
+veg_by_year_yr <- veg_by_year %>% select(year)
+veg_by_year_dat_sqrt <- sqrt(veg_by_year_dat)
+veg_by_year_rel <- decostand(veg_by_year_dat_sqrt, "total")
+
+# Run plot-level PerMANOVA by year
+spp_perm_plot_veg <-adonis(veg_by_year_rel ~ year, data=veg_by_year_yr , permutations = 999, method="bray")
+spp_perm_plot_veg
+
+
+#'
+#'  Site-level vegetation data by year
+#'  
+veg_by_year_site <- seedbank_veg_full_com %>%
+  filter(type=="veg") %>%
+  select(-type, - plot) %>%
+  group_by(site, year) %>%
+  summarise_all(mean) %>%
+  ungroup()
+
+veg_by_year_site_dat <- veg_by_year_site %>% select(-year, -site)
+veg_by_year_site_yr <- veg_by_year_site %>% select(year)
+veg_by_year_site_dat_sqrt <- sqrt(veg_by_year_site_dat)
+veg_by_year_site_rel <- decostand(veg_by_year_site_dat_sqrt, "total")
+
+#' Run plot-level PerMANOVA by year
+spp_perm_site_veg <-adonis(veg_by_year_site_rel ~ year, data=veg_by_year_site_yr , permutations = 999, method="bray")
+spp_perm_site_veg
+
+
+
+
+#'  
+#'  D) *Annuals VS Perennials in the vegetation and seed bank*
+#'  
+
+
+#' View relevant dataframes
+#   Relative abundances by site
+str(site_veg_sb_rel2)
+#   Relative abundances across sites
+str(tot_rel)
+#    Life history status
+lifehist <- trait %>%
+  select(species, lifehistory)
+lifehist
+
+
+#' Create vectors of ann_bi and perennial species
+ann_bi <- lifehist %>%
+  filter(lifehistory == "ann_bi")
+perennial <- lifehist %>%
+  filter(lifehistory == "perennial")
+
+ann_bi_spp <- sapply(ann_bi$species, as.character)
+perennial_spp <- sapply(perennial$species, as.character)
+
+
+
+#' Create dataframes with relative abundances of each life history within and across sites
+
+#   Across sites
+tot_ann_bi <- tot_rel[, ann_bi_spp]
+tot_perennial <- tot_rel[, perennial_spp]
+#   Within sites
+site_ann_bi <- site_veg_sb_rel2[, ann_bi_spp]
+site_perennial <- site_veg_sb_rel2[, perennial_spp]
+
+
+
+#' Total relative abundances by life history across and within sites
+
+#   Across sites, annuals-biennials
+tot_ann_bi$sum <- rowSums(tot_ann_bi)
+tot_ann_bi$type <- tot_rel$type
+tot_rel$ann_bi_sum <- tot_ann_bi %>% select(sum)
+#   Across sites, perennials
+tot_perennial$sum <- rowSums(tot_perennial)
+tot_perennial$type <- tot_rel$type
+tot_rel$perennial_sum <- tot_perennial %>% select(sum)
+
+#   Within sites, compile annuals-biennial and perennial summed relative abundances
+site_ann_bi$ann_bi_sum <- rowSums(site_ann_bi)
+site_ann_bi$type <- site_veg_sb_rel2$type
+site_lifehistory <- site_ann_bi %>% select(type,ann_bi_sum)
+site_lifehistory$type <- plyr::revalue(site_lifehistory$type, c("sb"="Seed bank", "veg"="Vegetation"))
+site_lifehistory$perennial_sum <- rowSums(site_perennial)
+site_lifehistory$elev_rank <- rep(env$elev_rank, 2)
+
+
+
+#'
+#' *Data*
+#' 
+tot_rel %>% select(type, ann_bi_sum, perennial_sum)
+site_lifehistory
+
+
+#'
+#' *Model*
+#'
+
+lm_lifehist <- lm(ann_bi_sum ~ elev_rank * type, data=site_lifehistory)
+summary(lm_lifehist)
+Anova(lm_lifehist, type="III")
+
+
+#'
+#'  *Figure*:  Create a figure showing proportion of annuals-biennials in the vegetation and seed bank over the gradient
+#' 
+
+lifehist_fig <- ggplot(data = site_lifehistory) + 
+  geom_point(aes(x=elev_rank, y=ann_bi_sum, col=type)) +
+  geom_smooth(aes(x=elev_rank, y=ann_bi_sum, col=type), method="lm", se=FALSE) +
+  scale_color_manual(values=c("dodgerblue3","black")) +
+  labs(x="Terrace Elevation Rank", y="Proportion of annual-biennials \n (by relative abundance)", col="Community type", fill="Community type") +
+  scale_x_continuous(breaks=c(1,3,5,7,9,11)) +
+  theme(text = element_text(size=10), axis.text.x=element_text(size=10),axis.text.y=element_text(size=10)) +
+  geom_text(aes(x=10, y=.6, label = "type p<0.001"), size=3.4) +
+  geom_text(aes(x=10, y=0.55, label = "elev rank p=0.005"), size=3.4) +
+  geom_text(aes(x=10, y=0.5, label = "t*e NS"), size=3.4)
+lifehist_fig
+
+
+#' Save figure
+tiff(filename="life_history_seedbank_bias.tiff", res=600, width=6, height = 4, units = "in")
+lifehist_fig
 dev.off()
 
