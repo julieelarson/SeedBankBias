@@ -1,7 +1,7 @@
 #' ---
 #' title: "R Script for: Seed bank bias: Differential tracking of functional traits in the seed bank and vegetation across a gradient"
 #' author: "Julie Larson"
-#' date: "19 Jun 2021"
+#' date: "16 Nov 2021"
 #' output: html_document
 #' ---
 #' 
@@ -9,11 +9,11 @@
 
 
 #'
-#' Last code updates / cleaning made on 28 October 2021, 
+#' Last code updates / cleaning made on 16 November 2021, 
 #'    upon acceptance of the corresponding manuscript for publication:
 #' 
 #' 
-#' Authors: Larson, J.E. & K.N. Suding, University of Colorado, Boudler, CO, USA
+#' Authors: Larson, J.E. & K.N. Suding, University of Colorado, Boulder, CO, USA
 #' 
 #' Contact: Julie Larson (julie.e.larson@colorado.edu)
 #' 
@@ -96,7 +96,7 @@ source ('http://www.davidzeleny.net/anadat-r/doku.php/en:customized_functions:or
 options(tibble.width = Inf)
 options(tibble.print_max= Inf)  
 
-# Set option for contrasts (Type III sums of squares (lm's))
+# Set option for contrasts (Type III sums of squares (inear models))
 options(contrasts = c("contr.sum","contr.poly"))
 
 # Load function to calculate standard errors
@@ -115,7 +115,7 @@ se <- function(x, na.rm=FALSE) {
 #' 
 #' This R script describes and runs analyses related to the Seed Bank Bias Project - 
 #' an assessment of how the taxonomic and functional composition of vegetation and 
-#' seedbank change across an edaphic gradient (i.e. soil terraces increasing in elevation 
+#' seed bank change across an edaphic gradient (i.e. soil terraces increasing in elevation 
 #' and surface age) in Boulder, CO, USA. 
 #' 
 #' This environmental gradient consists of 12 sites located across six previously-described 
@@ -142,33 +142,48 @@ se <- function(x, na.rm=FALSE) {
 str(env)
 
 #'  *Data level* - Collected or aggregated at the site level (n=12 sites)
-#'  Site identity is given by the either of the first two columns:
-#'    'site' [levels A-L] and 
-#'    'site_names' [abbreviations that are specific to the soil surface] 
 #'  
-#'  *Variables* -  
-#'  age rank - youngest to oldest soil surface, 1-6, 
+#'  *Site identifiers* - Sites are distinguished by the either of the first two columns:
+#'    'site' [A-L]: Identifiers used by project managers 
+#'    'site_names : Abbreviations that reflect pedologic name of each soil surface (2 sites per surface)
+#'                  PP = Post-Piney Creek
+#'                  L  = Louviers
+#'                  S  = Slocum
+#'                  v  = Verdos
+#'                  YRF= Young Rocky Flats
+#'                  ORF= Old Rocky Flats
+#'                     
+#'                      See: Birkeland, P. W., R. R. Shroba, S. F. Burns, A. B. Price, and P. J. Tonkin. 2003. 
+#'                      Integrating soils and geomorphology in mountains - an example from the Front Range of 
+#'                      Colorado. Geomorphology 55:329-344.          
+#'                 
+#'  
+#'  *Environmental Variables* -  
+#'  age rank    - youngest to oldest soil surface, 1-6, 
 #'  elevation_m - elevation (m) of each soil surface,  
-#'  clay - % in soil, samples collected at site-level, 2017,  
-#'  silt - % in soil,samples collected at site-level, 2017,  
-#'  sand - % in soil, samples collected at site-level, 2017,  
-#'  pH - pH of soil at each site, samples collected at site-level, 2017,  
-#'  soil C - % in soil, samples collected at site-level, 2017,  
-#'  soil OM - % in soil, samples collected at site-level, 2017,   
-#'  litter - % aerial cover at plot-level, averaged across plots and years (2017-18) for each site,   
-#'  bare ground - % aerial cover at plot-level, averaged across plots and years (2017-18) for each site,   
-#'  cowpie - % aerial cover at plot-level, averaged across plots and years (2017-18) for each site,  
-#'  rock - % aerial cover at plot-level, averaged across plots and years (2017-18) for each site,   
-#'  total plant cover - % aerial cover at plot-level, averaged across plots and years (2017-18) for each site,     
-#'  soil N - % in soil, samples collected in 2017  
+#'  clay        - % in soil, samples collected at site-level, 2017,  
+#'  silt        - % in soil,samples collected at site-level, 2017,  
+#'  sand        - % in soil, samples collected at site-level, 2017,  
+#'  pH          - pH of soil at each site, samples collected at site-level, 2017,  
+#'  soilC       - % carbon in soil, samples collected at site-level, 2017,  
+#'  om_2017     - % organic matter in soil, samples collected at site-level, 2017,   
+#'  litter_cov - % aerial cover of litter at plot-level, averaged across plots and years (2017-18) for each site,   
+#'  bare_cov   - % aerial cover of bare ground at plot-level, averaged across plots and years (2017-18) for each site,   
+#'  cowpie_vov - % aerial cover of cowpies at plot-level, averaged across plots and years (2017-18) for each site,  
+#'  rock_cov   - % aerial cover of rocks at plot-level, averaged across plots and years (2017-18) for each site,   
+#'  veg_cov    - % aerial cover of all vegetation at plot-level, averaged across plots and years (2017-18)
+#'               for each site. Value reflects summed cover of all species in a plot, and can exceed 100% 
+#'               if species' canopies overlap.
+#'  soilN      - % nitrogen in soil, samples collected in 2017  
 #'  
 #'  *Variables for qualitative assessment only* -  
 #'  Soil volumetric water content (measured at only 6/12 sites):
 #'  
 #'  vwc_may_avg_shallow - site-level soil volumetric water content across all days in May, averaged over 2017-2018 
-#'                        from continuous soil moisture sensors installed at 10cm depth (TDR probes)
-#'  vwc_may_avg_deep -    site-level soil volumetric water content across all days in May, averaged over 2017-2018 
-#'                        from continuous soil moisture sensors installed at 30cm depth (TDR probes)
+#'                        from continuous soil moisture sensors installed at 10cm depth (hourly measures, TDR probes)
+#'  vwc_may_avg_deep    - site-level soil volumetric water content across all days in May, averaged over 2017-2018 
+#'                        from continuous soil moisture sensors installed at 30cm depth (hourly measures, TDR probes)
+
 
 
 
@@ -183,18 +198,19 @@ str(veg_sb)
 #'                                         [  within each of 12 sites  ]
 #'  
 #'  *Raw variables* -  
-#'  type ['veg' or 'sb'] -  Indicates whether data from each plot (row) is from the vegetation or seed bank   
-#'  site [A to L] - One of 12 letters is an indicator for site identity  
-#'  plot [1 to 10] - Identifies specific 1m2 plot within a site; vegetative and seed bank communities
-#'                   with the same plot number in a site were sampled from the same 1m2 plot. 
-#'  age_rank -  site-level indicator of soil surface age (youngest to oldest, 1 to 6)
-#'
-#'  Remaining columns: Community composition (i.e. columns are unique species or genera codes) 
-#'  Rows: Individual plots (up to 10 plots sampled within a given site)
+#'  type ['veg' or 'sb'] - Indicates whether data from each plot (row) is from the vegetation or seed bank   
+#'  site [A to L]        - One of 12 letters; an indicator for site identity (matches env$site)
+#'  plot [1 to 10]       - Identifies specific 1m2 plot within a site; vegetative and seed bank communities
+#'                         with the same plot number in a site were sampled from the same 1m2 plot. 
+#'  age_rank             - site-level indicator of soil surface age (youngest to oldest, 1 to 6)
+#'  ---
+#'  Other Columns        - Unique species or genera codes, with cells in each vector reflecting raw abundances
+#'  Rows                 - Individual plots (up to 10 plots sampled within a given site)
 #'  
-#'  Note on community composition: 
-#'  Percent plant cover (veg) or seed bank counts (sb) for each species or genera (plot-level data), 
-#'  averaged across 2017-18 on a per plot/type basis. Note that the level of classification (e.g., species, 
+#'  
+#'  *Note on community composition:*
+#'  Abundances in each cell reflect percent plant cover (veg) or seed bank counts (sb) for each species or genera 
+#'  (plot-level data), averaged across 2017-18 on a per plot/type basis. Note that the level of classification (e.g., species, 
 #'  genera, or broader functional group) was determined as the coarsest level of identification across 
 #'  veg and seed bank samples. For example, Heterotheca Villosa and H. foliosa were differentiable in the vegetation
 #'  but not in the seed bank. Therefore, these two species are pooled at the genera level for both datasets
@@ -213,22 +229,31 @@ str(veg_sb)
 #'  
 #'  
 #'  *Data transformation*-  
-#'  Seed bank data:  Prior to analyses, data will be squareroot-transformed and converted to relative abundances
-#'  on a per plot basis. Quick summary is that this improves evenness (necessary for trait-based inferences).  
-#'  
-#'  Veg data: Prior to analysis, data will be squareroot-transformed and converted to relative abundances
-#'  on a per plot basis.  Quick summary is that this improves evenness (necessary for trait-based inferences).  
+#'  Prior to analyses, both seed bank and vegetation composition data will be squareroot-transformed and 
+#'  converted to relative abundances on a per plot basis (done within the R code). 
+#'  Quick summary is that this improves evenness (necessary for trait-based inferences).  
 #'  
 #'  
+  
 
-#' Note that another community dataframe is also used in the supplement. 
-#'   It is similar to the dataframe described just above, but contains all species (no rare removed)
-#'   across separate sampling years (i.e. values not averaged across 2017 and 2018)
-#'   
-#'   Note that these are the raw data (counts / covers), and are used only on a species' presence-
-#'   absence basis to assess the effects of removing rare species on richness estimates
+
+
+#'  ---
+#'  **SUPPLEMENTAL DATA: Full vegetation and seed bank composition**  
+#'  ---
 
 str(seedbank_veg_full)  
+
+#' Another community dataframe is also used for supplementary assessments.
+#'   It is similar to the dataframe described just above, but contains ALL species 
+#'   (no infrequent species removed) across separate sampling years 
+#'   (i.e. values not averaged across 2017 and 2018)
+#'   
+#'   Note that these are the raw data (counts / covers), and are used only on a species' 
+#'   presence-absence basis here, in order to assess how removing infrequent species 
+#'   impacts species richness estimates 
+#'   
+
 
 
 
@@ -347,20 +372,19 @@ env_cor_fig_all
 dev.off()
 
 
+#'
+#'  a) Identify highly correlated variables (r>0.8)
+#'  
+
 
 #' 
 #' *Env Correlation Assessment:* Note variables that meet conditions for removal based on high correlation  
 #' 
 
+#'     Soil age rank is highly correlated with elevation (r=0.94) and elevation rank (r=0.93)
+#'     due to the terrace formation involved in the different soil surface ages. 
 #'
-#'  a) Highly correlated variables (r>0.8)
-#'  
-
-
-#     - Soil age rank is highly correlated with elevation (r=0.94) and elevation rank (r=0.93)
-#     due to the terrace formation involved in the different soil surface ages. 
-#
-#     Because of this high correlation, we will ultimately rely on elevation rank as a proxy.
+#'     Because of this high correlation, we will ultimately rely on elevation rank as a proxy.
 
 
 #' Terrace elevation and soil age rank
@@ -397,25 +421,25 @@ grid.arrange(cor_elev, cor_elevrank)
 dev.off()
 
 
-#     - Soil N and Soil C are highly correlated (r=0.95). Because soil N is missing for
-#       one sample, we will remove soil N and retain soil C.
+#'       Soil N and Soil C are highly correlated (r=0.95). Because soil N is missing for
+#'       one sample, we will remove soil N and retain soil C.
 
 cor2 <- ggplot( aes(y=soilC, x=soilN), data=env) + 
   geom_point() +
   geom_smooth(method="lm", se=F)
 cor2
 
-#     - Soil OM and Soil C are highly correlated (r=0.85). Soil C has one more sig. 
-#       correlation with other variables, so we will remove soil OM and retain soil C.
+#'     Soil organic matter (om_2017) and Soil C are highly correlated (r=0.85). Soil C has one more sig. 
+#'       correlation with other variables, so we will remove soil OM and retain soil C.
 
 cor3 <-ggplot( aes(y=soilC, x=om_2017), data=env) + 
   geom_point() +
   geom_smooth(method="lm", se=F)
 cor3
 
-#     - Sand is significantly correlated with clay (r=-0.81) and less so with silt(r=-0.72).
-#       However, neither clay nor silt are correlated with eachother. Therefore, we will 
-#       retain clay and silt, but remove sand.
+#'       Sand is significantly correlated with clay (r=-0.81) and less so with silt(r=-0.72).
+#'       However, neither clay nor silt are correlated with eachother. Therefore, we will 
+#'       retain clay and silt, but remove sand.
 
 cor4 <- ggplot( data=env) + 
   geom_point(aes(x=sand, y=clay), col="green") +
@@ -433,15 +457,15 @@ cor5
 
 
 #'
-#'  b) any exploratory variables that appear non-functional (e.g., non-correlated with others)  
+#'  b) Identify exploratory variables that appear non-functional (e.g., non-correlated with others)  
 #'  
 
-#     - Cowpie cover only varies from 0 to 1.8%, and it's not clear that it is
-#       accurately describing current grazing pressure. If that were the case, we might expect
-#       a negative association with litter, plant cover, or a positive association with bare ground
-#       and all we see is a positive association with litter (r=0.7); maybe cows are breaking up veg into
-#       litter but not hitting hard enough to break it down/remove? Litter does have some weaker
-#       correlations with other variables, so we will retain litter here, but remove cowpie.
+#'      Cowpie cover only varies from 0 to 1.8%, and it's not clear that it is
+#'      accurately describing current grazing pressure. If that were the case, we might expect
+#'      a negative association with litter, plant cover, or a positive association with bare ground
+#'      and all we see is a positive association with litter (r=0.7); maybe cows are breaking up veg into
+#'      litter but not hitting hard enough to break it down/remove? Litter does have some weaker
+#'      correlations with other variables, so we will retain litter here, but remove cowpie.
 
 cor6 <- ggplot( aes(y=litter_cov, x=cowpie_cov), data=env) + 
   geom_point() +
@@ -456,7 +480,7 @@ cor6
 #'     - Deep May soil VWC is tightly tied to bare ground (r=0.91)
 #'     
 
-# Create reduced dataset with only variables of interest
+#' Create reduced dataset with only variables of interest
 vwc_dat <- env %>%
   select(vwc_may_avg_shallow, vwc_may_avg_deep, bare_cov, veg_cov) %>%
   gather(key="depth", value="vwc", vwc_may_avg_shallow, vwc_may_avg_deep)
@@ -464,7 +488,7 @@ vwc_dat$depth <-  factor(vwc_dat$depth,
                          levels = c("vwc_may_avg_shallow", "vwc_may_avg_deep"),
                          labels = c("shallow","deep"))
 
-# Create bare ground figure
+#' Create bare ground figure
 vwc_bare <- ggplot( aes(y=100*vwc, x=bare_cov), data=vwc_dat) + 
   geom_point(aes(col=depth),cex=2.5) +
   geom_smooth(method="lm", se=F, data=subset(vwc_dat, depth=="deep"),col="dodgerblue4") +
@@ -473,7 +497,7 @@ vwc_bare <- ggplot( aes(y=100*vwc, x=bare_cov), data=vwc_dat) +
   annotate(geom="text", x=24, y=36, label="r=0.91", color="dodgerblue4", fontface="bold") + 
   theme(legend.position = "none")
 
-# Create veg cover figure
+#' Create veg cover figure
 vwc_veg <- ggplot( aes(y=100*vwc, x=veg_cov), data=vwc_dat) + 
   geom_point(aes(col=depth), cex=2.5) +
   geom_smooth(method="lm", se=F, data=subset(vwc_dat, depth=="shallow"),col="dodgerblue") + 
@@ -482,7 +506,7 @@ vwc_veg <- ggplot( aes(y=100*vwc, x=veg_cov), data=vwc_dat) +
   annotate(geom="text", x=87, y=18, label="r=-0.89", color="dodgerblue", fontface="bold") +
   xlim(40,100)
 
-# View and save figures
+#' View and save figures
 grid.arrange(vwc_bare, vwc_veg, ncol=2, widths=c(1,1.4))
 
 tiff(filename="vwc_corr.tiff", res=600, width=9, height = 4.5, units = "in")
@@ -601,8 +625,8 @@ dev.off()
 #####
 #'  ############
 #'  
-#'  **Taxonomic  biases:** How do the taxonomic richness and composition of the vegetation and seedbank compare to one
-#'  another and change across the soil chronosequence? 
+#'  **Taxonomic  biases:** How do the taxonomic richness and composition of the vegetation and 
+#'  seedbank compare to one another and change across the gradient? 
 #'  [i.e. Is there a pattern of community response with implications for management?]
 #'  
 #'  ############
@@ -864,7 +888,7 @@ dev.off()
 
 #' ELEVATION RANK
 # Run linear model to report
-rich_fig_dat$type <- factor(rich_fig_dat$type, levels = c("Veg+Seedbank",  "Seedbank",  "Vegetation"))
+rich_fig_dat$type <- factor(rich_fig_dat$type, levels = c("Veg+Seed bank",  "Seed bank",  "Vegetation"))
 rich_lm_rank <- lm(richness ~ type * elev_rank, data=rich_fig_dat)
 summary(rich_lm_rank)
 Anova(rich_lm_rank, type="III")
@@ -1099,8 +1123,8 @@ dev.off()
   
 #'  
 #' 
-#'   **Functional biases: How do functional diversity and composition of the vegetation and seedbank compare to one**
-#'                        **another and change across the soil chronosequence?**  
+#'   **Functional biases: How do functional diversity and composition of the vegetation and seedbank** 
+#'                **compare to one another and change across the gradient?**  
 #'  
 #'  
 
@@ -1300,10 +1324,11 @@ rbind(veg_height, veg_rmr, veg_rdmc, veg_srl, veg_rdiam, veg_ldmc, veg_sla, veg_
 rbind(sb_height, sb_rmr, sb_rdmc, sb_srl, sb_rdiam, sb_ldmc, sb_sla, sb_smass)
 
 
+#'  
 #'  *Reduce veg and trait dataframes* to only contain species with at least one trait available
-#    (Cactus and  ascste has to be removed from each)
-# 
-# Remaining species=79
+#      (Species 'cactus' and  'ascste' have to be removed from each)
+#         Remaining species=79
+#
 
 veg_only_t1 <- veg_sqrt %>%
   select(one_of(veg_spp_only$species)) %>%
@@ -1346,14 +1371,15 @@ pairs(trait_veg_s)
 # Sidenote - there is a weird pattern in the leaf trait data of two clean, separate lines..
 # I wanted to investigate, and it looks like a weird but VERY clear life form pattern
 ggplot(data=trait) +
-  geom_point(aes(x=LDMC, y=SLA), cex=2) +
-  geom_smooth(method="lm", aes(x=LDMC, y=SLA), se=F)
+  geom_point(aes(x=LDMC, y=SLA, col=habit), cex=2) +
+  geom_smooth(method="lm", aes(x=LDMC, y=SLA, col=habit), se=F)
 
 
 
+#'  
 #'  *Reduce sb and trait dataframes* to contain only species with >=1 trait
-# Cactus has to be removed from each
-# Remaining species=74
+#      Species 'cactus' has to be removed from each
+#        Remaining species=74
 
 sb_only_t1 <- sb_sqrt %>%
   select(one_of(sb_spp_only$species)) %>%
@@ -1391,9 +1417,11 @@ round(cor(trait_sb_s, use="pairwise.complete.obs"), 2)
 pairs(trait_sb_s) 
 
 
+
+#'  
 #'  *Reduce combined veg/sb and trait dataframes* to contain only species with >=1 trait
-# Ascste/Cactus has to be removed from each
-# Remaining species=88
+#     (Species 'cactus' and 'ascste' have to be removed from each
+#        Remaining species=88
 
 veg_sb_t1 <- veg_sb_sqrt  %>%
   select(-cactus, -ascste) 
@@ -1445,6 +1473,7 @@ dev.off()
 #'  **Test: Veg functional diversity as a function of elevation rank**  
 #'  
 #'  Notes on Diversity metrics:
+#'  
 #'  *FDis:* 
 #'  With abundance data, this metric is the weighted average distance of all
 #'  species in a community to the centroid (whose location is shifted towards the 
@@ -1465,10 +1494,10 @@ dev.off()
 #'  CAN account for species relative abundances (Villeger et al. 2008)
 #'  
 #'  
-#'  Based on these descriptions, my apriori preference is to use FDis as the
+#'  Based on these descriptions, my a priori preference is to use FDis as the
 #'  focal functional diversity metric. It aligns conceptually with what I envision
 #'  capturing with Functional Diversity, it is intuitive, AND it is unaffected
-#'  by species richness(!)
+#'  by species richness
 #'  
 
 #'  
@@ -1498,12 +1527,13 @@ env$fric_v <- dbfd1$FRic
 #' Fdiv
 env$fdiv_v <- dbfd1$FDiv
 
-#' Fdis
+#' Fdis - based on both abundance and pres-absence
 env$fdis_v <- dbfd1$FDis
 env$fdis_v_pa<- dbfd1_pa$FDis
 
 #' RaoQ
 env$raoq_v <- dbfd1$RaoQ
+
 
 
 #' 
@@ -1535,12 +1565,13 @@ env$fric_s <- dbfd2$FRic
 #' Fdiv
 env$fdiv_s <- dbfd2$FDiv
 
-#' Fdis
+#' Fdis - based on both abundance and pres-absence
 env$fdis_s <- dbfd2$FDis
 env$fdis_s_pa <- dbfd2_pa$FDis
 
 #' RaoQ
 env$raoq_s <- dbfd2$RaoQ
+
 
 
 #'
@@ -1570,7 +1601,7 @@ env$fric_vs <- dbfd3$FRic
 #' Fdiv
 env$fdiv_vs <- dbfd3$FDiv
 
-#' Fdis
+#' Fdis - based on both abundance and pres-absence
 env$fdis_vs <- dbfd3$FDis
 env$fdis_vs_pa <- dbfd3_pa$FDis
 
@@ -1609,8 +1640,8 @@ veg_sb_compare_fdis <- env %>%
 veg_sb_compare_fdis
 
 
-#'   *Figure*: Scatterplot with functional dispersion (y) as a function of age rank (x), with sites as 
-#'      points colored by seedbank (blue), veg (black), seedbank+veg (gray)
+#'   *Figure*: Scatterplot with functional dispersion (y) as a function of elevation rank (x), with sites as 
+#'      points colored by seed bank (blue), veg (black), seed bank+veg (gray)
 
 
 # Figure by ELEVATION RANK
@@ -1835,18 +1866,18 @@ Anova(raoq_lm_ranked, type="III")
 
 
 #' 
-#' **Test:** Functional trait composition (CWMs)
 #' 
-#' Functional composition is assessed via trait community-weighted means (CWMs) and community-weighted variances
+#' **Test: Functional trait composition (CWMs)**
+#' 
+#' Functional composition is assessed via trait community-weighted means (CWMs) 
 #' for each site and community type (seedbank or veg) 
 #' 
 #' 
 
 
-
 #' *Calculate Vegetation CWMs*
-#'  Calculate and explore vegetation CWM's based on weighted abundances
-#'  
+#'  Calculate and explore vegetation CWMs based on weighted abundances
+
 
 #' Veg CWMS
 fc_v <- functcomp(trait_veg_s, veg_only_site_m)
@@ -1903,9 +1934,13 @@ cwm_veg_pa_corr_sig
 #' View CWM correlations from weighted data VW pres/abs side by side
 
 grid.arrange(cwm_veg_corr_sig, cwm_veg_pa_corr_sig)
+
+# Save figure
 tiff(filename="Veg_CWM_correlations.tiff", res=600, width=6, height = 7, units = "in")
 grid.arrange(cwm_veg_corr_sig, cwm_veg_pa_corr_sig)
 dev.off()
+
+
 
 #' 
 #' *Approach 2* - Identify dominant species and explore their potential for influence
@@ -2280,8 +2315,10 @@ Anova(seedmass_lm_rank_pa , type="III")
 #' Create/check dataframes for analysis
 #' 
 
+#
 # Species matrices: 88 species x 12 sites, separated by vegetation and seed bank communities
 #   Note that we start with 90 species, but need to remove two without any trait data available (ascste, cactus_spp)
+#
 str(site_veg_sb_rel2)
 seed_bank_comm <- site_veg_sb_rel2 %>%
   filter(type == "sb") %>%
@@ -2298,16 +2335,22 @@ seed_bank_comm_pa <- seed_bank_comm %>%
 veg_comm_pa <- veg_comm %>% 
   replace(((.)>0),1)
 
+
+# 
 # Environment matrix:  1 variable (elev. rank) x 12 sites
+#
 env_var <- env %>% select(elev_rank)
 str(env_var)
 
 
-# Trait matirx: 8 traits (all transformation/scaling complete) x 88 species
-#   Note that there are several missing trait observations that must be imputed before analysis
+# 
+# Trait matrix: 8 traits (all transformation/scaling complete) x 88 species
+#
 str(trait_veg_sb_s)
-#  Need to impute missing trait values with PCA approach
-#  Use leave-one-out (loo) method to determine how many components to use for lowest mean square root error
+
+#  Note that there are several missing trait observations that must be imputed before analysis
+#    Need to impute missing trait values with PCA approach
+#      Use leave-one-out (loo) method to determine how many components to use for lowest mean square root error
 nb <- estim_ncpPCA(trait_veg_sb_s, ncp.min=0, ncp.max=8, method.cv="loo")  
 nb #Use 7 components
 trait_complete <- imputePCA(trait_veg_sb_s,ncp=7,scale=FALSE, method="Regularized")
@@ -2316,12 +2359,11 @@ trait_matrix <- data.frame(trait_complete$completeObs)
 
 
 #' 
-#' Fourth-corner analysis
+#'  Fourth-corner analysis
 #' 
 
 # Use method=6, which combines permutation of sites and permutation of species to obtain tests with correct type 1 errors
 # no adjustment for multiple comparisons, consistent with linear models approach
-
 
 # Abundance data
 nrepet <- 49999  #Set number of reps
@@ -3223,10 +3265,13 @@ lifehist_fig <- ggplot(data = site_lifehistory) +
   scale_color_manual(values=c("dodgerblue3","black")) +
   labs(x="Terrace Elevation Rank", y="Proportion of annual-biennials \n (by relative abundance)", col="Community type", fill="Community type") +
   scale_x_continuous(breaks=c(1,3,5,7,9,11)) +
-  theme(text = element_text(size=10), axis.text.x=element_text(size=10),axis.text.y=element_text(size=10)) +
+  theme(text = element_text(size=10), axis.text.x=element_text(size=10),
+        axis.text.y=element_text(size=10), panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), panel.background = element_blank(),
+        axis.line = element_line(colour = "black")) +
   geom_text(aes(x=10, y=.6, label = "type p<0.001"), size=3.4) +
-  geom_text(aes(x=10, y=0.55, label = "elev rank p=0.005"), size=3.4) +
-  geom_text(aes(x=10, y=0.5, label = "t*e NS"), size=3.4)
+  geom_text(aes(x=10, y=0.55, label = "elev rank p=0.0059"), size=3.4) +
+  geom_text(aes(x=10, y=0.5, label = "t*e NS"), size=3.4) 
 lifehist_fig
 
 
