@@ -6,6 +6,8 @@ Date of data collection   2017-2018.
 
 Geographic location of data collection:  Boulder, CO, USA [See associated manuscript for more information on site locations]
 
+R Software: All analyses were conducted in R (R version 3.5.1).
+
 Funding sources or sponsorship that supported the collection of the data:  
 This work was supported by the City of Boulder Open Space & Mountain Parks Funded Research Program, Univ. of Colorado Undergraduate Research Opportunities Program, and a graduate research grant from the Dept. of Ecology & Evolutionary Biology (Univ. of Colorado)
 
@@ -14,7 +16,7 @@ This work was supported by the City of Boulder Open Space & Mountain Parks Funde
 SHARING/ACCESS INFORMATION
 -------------------------- 
 
-Licenses/restrictions placed on the data, or limitations of reuse:  None. Please communicate any interest or use to the Principal Investigator.
+Licenses/restrictions placed on the data, or limitations of reuse: TBD
 
 Recommended citation for the data:  This data is being archived in anticipation of manuscript publication in the journal: Ecology  
 Search for: Larson, J.E & K.N. Suding. Seed bank bias: Differential tracking of functional traits in the seed bank and vegetation across a gradient. Ecology. 
