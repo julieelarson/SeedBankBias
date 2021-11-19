@@ -38,7 +38,7 @@ terrace elevation is used as the main proxy for the gradient in analyses.  Soil 
 are also included in the site-level environmental data matrix.
 [Species] In 2017-2018, plant community cover estimates were made (visual cover of species) 
 and seed banks were sampled and grown out to estimate seed bank composition (count by species).
-{Trait} We also compiled plant functional traits for common species in these communities, 
+[Trait] We also compiled plant functional traits for common species in these communities, 
 including leaf and root traits (collected in a greenhouse growout) and seed mass (collected / compiled). 
 
 For a full description of the project and analyses, see the accepted manuscript (citation information above).
