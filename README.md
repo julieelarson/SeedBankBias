@@ -9,7 +9,7 @@ Geographic location of data collection:  Boulder, CO, USA [See associated manusc
 R Software: All analyses were conducted in R (R version 3.5.1).
 
 Funding sources or sponsorship that supported the collection of the data:  
-This work was supported by the City of Boulder Open Space & Mountain Parks Funded Research Program, Univ. of Colorado Undergraduate Research Opportunities Program, and a graduate research grant from the Dept. of Ecology & Evolutionary Biology (Univ. of Colorado)
+This work was supported by the City of Boulder Open Space & Mountain Parks Funded Research Program, Univ. of Colorado Undergraduate Research Opportunities Program, and a graduate research grant from the Dept. of Ecology & Evolutionary Biology (Univ. of Colorado). J.L. was supported by a USDA NIFA Pre-Doctoral Fellowship (Accession No. 1019166)
 
 
 --------------------------
