@@ -16,9 +16,12 @@ This work was supported by the City of Boulder Open Space & Mountain Parks Funde
 SHARING/ACCESS INFORMATION
 -------------------------- 
 
-Licenses/restrictions placed on the data, or limitations of reuse: TBD
+Licenses/restrictions placed on the data, or limitations of reuse: CC0 1.0 Universal (Public Domain, no limits to reuse) https://creativecommons.org/publicdomain/zero/1.0/legalcode
 
-Recommended citation for the data:  This data is being archived in anticipation of manuscript publication in the journal: Ecology  
+Contact with the PI regarding specific reuse of data is preferred.
+
+Recommended citation for the data:  
+This data is being archived in anticipation of manuscript publication in the journal: Ecology  
 Search for: Larson, J.E & K.N. Suding. Seed bank bias: Differential tracking of functional traits in the seed bank and vegetation across a gradient. Ecology. 
 
 
@@ -28,21 +31,25 @@ PROJECT OVERVIEW
 --------------------
 
 This repository contains one R script and four .CSV data files related to the Seed Bank Bias Project - 
-an assessment of how the taxonomic and functional composition of vegetation and 
-seedbank change across an edaphic gradient (i.e. soil terraces increasing in elevation 
-and surface age) in Boulder, CO, USA. 
+an assessment of how the taxonomic and functional composition of the vegetation and seedbank change across 
+an edaphic gradient (i.e. soil terraces increasing in elevation and surface age) in Boulder, CO, USA. 
 
-The bulk of analyses explore patterns among these three data matrices: environment, species composition, and traits. 
+The bulk of analyses explore patterns among three data matrices: environment, species composition, and traits. 
 
-[Env] The environmental gradient consists of 12 sites located across six previously-described soil surfaces varying 
+
+[Environment] The environmental gradient consists of 12 sites located across six previously-described soil surfaces varying 
 in age from <5000 years to >1-2 million years. Older soil surfaces also occur on higher terraces, and ranked
 terrace elevation is used as the main proxy for the gradient in analyses.  Soil variables and other properties 
 are also included in the site-level environmental data matrix.
-[Species] In 2017-2018, plant community cover estimates were made (visual cover of species) 
-and seed banks were sampled and grown out to estimate seed bank composition (count by species).
-[Trait] We also compiled plant functional traits for common species in these communities, 
+
+[Species] In 2017-2018, plant community cover estimates were made within several plots at each site (visual cover of species), 
+and corresponding seed bank samples were grown out to estimate seed bank composition (count by species).
+
+[Traits] We also compiled plant functional traits for common species in these communities, 
 including leaf and root traits (collected in a greenhouse growout) and seed mass (collected / compiled). 
 
+
+Additional descriptions of the data are provided below and at the beginning of the R script associated with this repository. 
 For a full description of the project and analyses, see the accepted manuscript (citation information above).
  
 
@@ -52,7 +59,8 @@ DATA & FILE OVERVIEW
 
 Filenames and brief description of all data files:
 1.  Larson&Suding_SeedbankBias_Rscript.R   
-This file contains the R code used to run analyses associated with the accepted manuscript (see citation above)
+This file contains the R code used to run analyses associated with the accepted manuscript (see citation above). 
+It also contains metadata for each CSV file, including descriptions of all rows, columns, and units (as applicable) for each dataset used in analyses (see 'Data Types') within the R script.
 
 2.  env_data.csv  
 [Environmental matrix] This file contains data related to the edaphic gradient, including elevation, soil age rank, soil properties, and other features of each site (all properties quantified at the site-level).
@@ -61,17 +69,22 @@ This file contains the R code used to run analyses associated with the accepted 
 [Trait matrix] This file contains mean trait values and characterstics for each species. Full species names and additional information can be found in the Supporting Information attached to the accepted manuscript (see citation above).
 
 4. compiled_AVG_commonspp.csv
-[Community matrix] This file contains species abundances (columns) in the vegetation (estimated as % aerial cover) and seed bank (estimated as counts) for each plot (rows). Values reflect averages across 2017 and 2018 sampling years. These are raw data that have not yet been relatived or transformed in any way. However, infrequent species (not found in >5% of plots in either the vegetation OR the seed bank) have already been removed in this version.
+[Community matrix] This file contains species abundances (columns) in the vegetation (estimated as % aerial cover) and seed bank (estimated as counts) for each plot (rows). Values reflect averages across 2017 and 2018 sampling years. These are raw data that have NOT yet been relatived or transformed in any way. However, infrequent species (not found in >5% of plots in either the vegetation OR the seed bank) have already been removed in this version in preparation for most analyses.
 
 5. seedbank_veg_all_species_years.csv
-[Supplemental community matrix]. Same as no. 4, but contains abundance data for ALL recorded species (including infrequent species) separated out by sampling year (2017 or 2018).
+[Supplemental community matrix]. Same as no. 4, but contains abundance data for ALL recorded species (including infrequent species) separated out by sampling year (2017 or 2018). These data were only used by the authors for supplemental analyses of interannual differences and infrequent species removal effects.
+
+
+---------
+METADATA
+---------
+Information on the types and structure of data included in each .CSV file, including row and column descriptions, units, levels of sampling, etc., can be found in the R Script associated with repository (Larson&Suding_SeedbankBias_Rscript.R), in the section titled 'Data Types'.
 
 
 --------------------------
 METHODOLOGICAL INFORMATION
 --------------------------
-Detailed descriptions of the structure and variables for each dataset (i.e. CSV file) can be found at the beginning of 
-the R script (Larson&Suding_SeedbankBias_Rscript.R), and in the accepted publication.
+Detailed descriptions of the structure and variables for each dataset (i.e. CSV file) can be found in he R script (Larson&Suding_SeedbankBias_Rscript.R), and in the accepted publication.
 
 Here, we include a shortened overview of the methods that is adapted from the accepted manuscript. 
 This is meant to be a brief overview to guide interpretation of the data and data preparation/analyses carried out in the R Script.
