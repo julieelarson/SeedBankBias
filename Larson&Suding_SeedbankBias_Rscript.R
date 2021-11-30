@@ -1,7 +1,7 @@
 #' ---
 #' title: "R Script for: Seed bank bias: Differential tracking of functional traits in the seed bank and vegetation across a gradient"
 #' author: "Julie Larson"
-#' date: "16 Nov 2021"
+#' date: "30 Nov 2021"
 #' output: html_document
 #' ---
 #' 
@@ -9,7 +9,7 @@
 
 
 #'
-#' Last code updates / cleaning made on 16 November 2021, 
+#' Last code updates / cleaning made on 30 November 2021, 
 #'    upon acceptance of the corresponding manuscript for publication:
 #' 
 #' 
@@ -282,13 +282,13 @@ str(trait)
 #'  lifehistory     - [ann_bi, perennial] indicates whether a plant is annual/biennial (short-lived) or perennial
 #'  origin          - [native, exotic] indicates whether a plant is native or exotic in Boulder, CO, USA
 #'  height_per_day  - final average height of plants (typically after a target age of 16 wks, or at flowering [whichever is earliest])
-#'  RMR    - Root mass ratio (dry belowground biomass : dry aboveground biomass)
-#'  RDMC   - Root dry matter content (dry biomass / fresh biomass of roots )
-#'  SRL    - Specific root length (root length / root dry biomass)
-#'  Rdiam  - Root diameter (average width of roots)
-#'  LDMC   - Leaf dry matter content (dry biomass / fresh biomass of leaves)
-#'  SLA    - Specific leaf area (area/dry biomass of leaves)
-#'  Seed mass       - dry weight on a per seed basis
+#'  RMR    - Root mass ratio (g dry belowground biomass : g dry aboveground biomass)
+#'  RDMC   - Root dry matter content (g dry biomass / g fresh biomass of roots )
+#'  SRL    - Specific root length (cm root length /g root dry biomass)
+#'  Rdiam  - Root diameter (mm, average width of roots)
+#'  LDMC   - Leaf dry matter content (g dry biomass / g fresh biomass of leaves)
+#'  SLA    - Specific leaf area (area in cm2 / g dry biomass of leaves)
+#'  Seed mass       - mg dry weight on a per seed basis
 #'    
 #' 
 #' 
@@ -3280,3 +3280,5 @@ tiff(filename="life_history_seedbank_bias.tiff", res=600, width=6, height = 4, u
 lifehist_fig
 dev.off()
 
+
+save.image()
