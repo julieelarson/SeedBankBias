@@ -21,7 +21,9 @@ Licenses/restrictions placed on the data, or limitations of reuse: CC0 1.0 Unive
 Contact with the PI regarding specific reuse of data is preferred.
 
 Recommended citation for the data:  
-There is a DOI associated with this repository. 
+There is a DOI associated with this repository
+[![DOI](https://zenodo.org/badge/341404691.svg)](https://zenodo.org/badge/latestdoi/341404691)
+
 You may also cite the anticipated publication; these data are being archived in anticipation of manuscript publication in the journal 'Ecology.' Search for: Larson, J.E & K.N. Suding. Seed bank bias: Differential tracking of functional traits in the seed bank and vegetation across a gradient. Ecology. 
 
 
